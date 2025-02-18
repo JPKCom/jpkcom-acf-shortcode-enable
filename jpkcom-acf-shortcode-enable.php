@@ -2,7 +2,7 @@
 /*
 Plugin Name: JPKCom ACF (Pro) Enable Shortcode Plugin
 Plugin URI: https://www.jpkc.com/
-Description: Shortcodes can be used within a WYGIWYG to display another field’s value.
+Description: Shortcodes can be used within a WYSIWYG to display another field’s value.
 Version: 1.0.2
 Author: Jean Pierre Kolb <jpk@jpkc.com>
 Author URI: https://www.jpkc.com
