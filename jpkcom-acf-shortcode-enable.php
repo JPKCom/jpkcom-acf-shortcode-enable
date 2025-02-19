@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: JPKCom ACF (Pro) Enable Shortcode Plugin
-Plugin URI: https://www.jpkc.com/
+Plugin URI: https://github.com/JPKCom/jpkcom-acf-shortcode-enable
 Description: Shortcodes can be used within a WYSIWYG to display another field’s value.
 Version: 1.0.3
 Author: Jean Pierre Kolb <jpk@jpkc.com>
