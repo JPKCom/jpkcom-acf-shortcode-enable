@@ -36,6 +36,9 @@ For more details visit: https://www.advancedcustomfields.com/resources/shortcode
 
 ## Changelog
 
+### 2.0.1
+* Fix Stable tag
+
 ### 2.0.0
 * Added README.md
 * Plugin meta data update
