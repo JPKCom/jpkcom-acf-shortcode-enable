@@ -1,0 +1,68 @@
+############################
+### Default ignore rules ###
+############################
+
+# JPKCLI
+.jpkcli/*
+.jpkcli/
+jpkcli.ini
+jpkcli.log
+*.cli.backup*
+
+# VS Code
+.vscode
+.vscode/*
+
+# Zed
+.zed
+.zed/*
+
+# Composer
+composer.lock
+vendor/
+auth.json
+
+# Node
+node_modules/
+package-lock.json
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Diagnostic reports (https://nodejs.org/api/report.html)
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Optional npm cache directory
+.npm
+.npmrc
+
+# dotenv environment variables file
+.env
+.env.test
+.env.*
+!.env.example
+
+# Misc
+.cache
+.DS_Store
+*.tgz
+
+# WordPress
+/wp
+/wp/
+/wp/*
+
+# Claude
+.claude/
+.claude/*
+
+# phpDocumentor
+.phpdoc/
+docs/
+phpDocumentor.phar

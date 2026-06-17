@@ -1,0 +1,237 @@
+name: Build WordPress Plugin ZIP, Generate Plugin Manifest & Deploy
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Setup variables
+      - name: Setup variables
+        id: vars
+        run: |
+          echo "PLUGIN_SLUG=$(basename $GITHUB_REPOSITORY)" >> $GITHUB_ENV
+          TAG_NAME=${GITHUB_REF##*/}
+          TAG_NAME=${TAG_NAME#v}
+          echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
+          echo "DATE=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
+          echo "ZIP_FILE=$(basename $GITHUB_REPOSITORY).zip" >> $GITHUB_ENV
+          echo "DOWNLOAD_URL=https://github.com/${GITHUB_REPOSITORY}/releases/download/${GITHUB_REF##*/}/$(basename $GITHUB_REPOSITORY).zip" >> $GITHUB_ENV
+
+      # 3. Setup PHP
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          tools: composer
+          coverage: none
+
+      # 4. Setup Python
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      # 5. Install Pandoc and GraphViz
+      - name: Install Pandoc and GraphViz
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pandoc jq graphviz
+
+      # 6. Extract metadata and generate HTML
+      - name: Extract metadata and generate HTML
+        run: |
+          mkdir -p gh-pages-html gh-pages-json gh-pages-deploy
+
+          # Plain HTML readme for WordPress backend
+          if [ -f README.md ]; then
+            pandoc README.md -f markdown -t html -o gh-pages-html/readme.html
+          fi
+
+          # Original styled HTML für gh-pages Webseite (optional)
+          pandoc README.md -f markdown -t html5 \
+            -s -o gh-pages-html/index.html \
+            --metadata title="Plugin Documentation" \
+            --css https://cdnjs.cloudflare.com/ajax/libs/simpledotcss/2.3.7/simple.min.css \
+            --metadata pagetitle="JPKCom Plugin Docs"
+
+          # Extract sections
+          pandoc -f markdown -t html <(awk '/^## Description/{flag=1;next}/^## /{flag=0}flag' README.md) -o gh-pages-json/description.html || true
+          pandoc -f markdown -t html <(awk '/^## Installation/{flag=1;next}/^## /{flag=0}flag' README.md) -o gh-pages-json/installation.html || true
+          pandoc -f markdown -t html <(awk '/^## Changelog/{flag=1;next}/^## /{flag=0}flag' README.md) -o gh-pages-json/changelog.html || true
+          pandoc -f markdown -t html <(awk '/^## FAQ/{flag=1;next}/^## /{flag=0}flag' README.md) -o gh-pages-json/faq.html || true
+
+          # Extract metadata for JSON
+          declare -A META
+          while IFS=":" read -r key value; do
+            key=$(echo "$key" | sed -E 's/^\*\*//;s/\*\*$//;s/[[:space:]]//g')
+            value=$(echo "$value" | sed -E 's/^\*\*//;s/\*\*$//;s/^[[:space:]]*//;s/[[:space:]]*$//')
+            [ -n "$key" ] && META[$key]="$value"
+          done < <(grep -E '^\*\*[^:]+:\*\*' README.md)
+
+          {
+            echo "{"
+            for k in "${!META[@]}"; do
+              v=${META[$k]}
+              printf '  "%s": "%s",\n' "$k" "$v"
+            done
+            echo "  \"_generated\": true"
+            echo "}"
+          } > gh-pages-json/readme_meta.json
+
+          # Contributors & Tags
+          CONTRIBUTORS=$(grep -m1 '^**Contributors:**' README.md | sed 's/\*\*Contributors:\*\* //' | sed 's/, */","/g' | sed 's/^/["/' | sed 's/$/"]/')
+          TAGS=$(grep -m1 '^**Tags:**' README.md | sed 's/\*\*Tags:\*\* //' | sed 's/, */","/g' | sed 's/^/["/' | sed 's/$/"]/')
+          echo "CONTRIBUTORS=$CONTRIBUTORS" >> $GITHUB_ENV
+          echo "TAGS=$TAGS" >> $GITHUB_ENV
+
+          # Copy README.md to gh-pages for reference
+          cp README.md gh-pages-deploy/
+
+      # 7. Create plugin ZIP
+      - name: Create plugin ZIP
+        run: |
+          STAGING_DIR="${{ env.PLUGIN_SLUG }}"
+          mkdir -p "$STAGING_DIR"
+          rsync -a --exclude='.git' --exclude='.gitignore' --exclude='.github' --exclude='.DS_Store' --exclude='*.py' --exclude='CLAUDE.md' --exclude='.claude' --exclude='gh-pages-*' --exclude='docs' --exclude='phpdoc' --exclude='phpdoc.xml' --exclude='phpDocumentor.phar' . "$STAGING_DIR/"
+          zip -r "${{ env.ZIP_FILE }}" "$STAGING_DIR"
+          rm -rf "$STAGING_DIR"
+
+      # 7.1. Generate SHA256 checksum for security verification
+      - name: Generate SHA256 checksum
+        run: |
+          SHA256_HASH=$(sha256sum "${{ env.ZIP_FILE }}" | awk '{print $1}')
+          echo "SHA256_HASH=$SHA256_HASH" >> $GITHUB_ENV
+          echo "SHA256 Hash: $SHA256_HASH"
+          # Create checksum file for reference
+          echo "$SHA256_HASH  ${{ env.ZIP_FILE }}" > ${{ env.ZIP_FILE }}.sha256
+
+      # 8. Upload ZIP and checksum to GitHub release
+      - name: Upload ZIP and checksum to GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          generate_release_notes: true
+          files: |
+            ${{ env.ZIP_FILE }}
+            ${{ env.ZIP_FILE }}.sha256
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # 9. Generate JSON manifest dynamically
+      - name: Generate plugin manifest JSON
+        shell: python
+        run: |
+          import os, json
+
+          def load_section_html(name):
+              path = f"gh-pages-json/{name}.html"
+              return open(path, encoding="utf-8").read() if os.path.exists(path) else ""
+
+          meta = {}
+          meta_path = "gh-pages-json/readme_meta.json"
+          if os.path.exists(meta_path):
+              with open(meta_path, encoding="utf-8") as f:
+                  meta = json.load(f)
+
+          raw = os.environ.get("CONTRIBUTORS", '["JPKCom"]')
+          contributors_raw = json.loads(raw) if raw.strip() else ["JPKCom"]
+          contributors = {}
+          for username in contributors_raw:
+              username = username.strip()
+              if username:
+                  contributors[username] = {
+                      "profile": f"https://profiles.wordpress.org/{username}",
+                      "avatar": f"https://wordpress.org/grav-redirect.php?user={username}&s=36"
+                  }
+
+          tags_raw = os.environ.get("TAGS", '["ACF","Shortcode","HTML","Gutenberg"]')
+          tags = json.loads(tags_raw) if tags_raw.strip() else ["ACF","Shortcode","HTML","Gutenberg"]
+
+          def clean_meta_value(value):
+              if isinstance(value, str):
+                  return value.replace("**", "").replace("*", "").strip()
+              return value
+
+          plugin = {
+              "name": clean_meta_value(meta.get("PluginName", "")),
+              "display_name": clean_meta_value(meta.get("PluginName", "")),
+              "slug": os.environ.get("PLUGIN_SLUG"),
+              "version": clean_meta_value(meta.get("Version", os.environ.get("TAG_NAME"))),
+              "download_url": os.environ.get("DOWNLOAD_URL"),
+              "checksum_sha256": os.environ.get("SHA256_HASH", ""),
+              "requires": clean_meta_value(meta.get("Requiresatleast", "6.8")),
+              "tested": clean_meta_value(meta.get("Testedupto", "6.9")),
+              "requires_php": clean_meta_value(meta.get("RequiresPHP", "8.3")),
+              "author": clean_meta_value(meta.get("Author", "")),
+              "author_profile": clean_meta_value(meta.get("AuthorURI", "")),
+              "contributors": contributors,
+              "tags": [t.strip() for t in tags],
+              "license": clean_meta_value(meta.get("License", "GPL-2.0-or-later")),
+              "license_uri": clean_meta_value(meta.get("LicenseURI", "https://www.gnu.org/licenses/gpl-2.0.html")),
+              "text_domain": clean_meta_value(meta.get("TextDomain", "")),
+              "domain_path": clean_meta_value(meta.get("DomainPath", "/languages")),
+              "network": str(meta.get("Network", "true")).lower() == "true",
+              "requires_plugins": [clean_meta_value(p.strip()) for p in meta.get("RequiresPlugins", "").split(",") if p.strip()],
+              "homepage": clean_meta_value(meta.get("PluginURI", f"https://github.com/JPKCom/{os.environ.get('PLUGIN_SLUG')}")),
+              "last_updated": os.environ.get("DATE"),
+              "sections": {
+                  "description": load_section_html("description"),
+                  "installation": load_section_html("installation"),
+                  "changelog": load_section_html("changelog"),
+                  "faq": load_section_html("faq"),
+              },
+              "readme_html": open("gh-pages-html/readme.html", encoding="utf-8").read() if os.path.exists("gh-pages-html/readme.html") else "",
+              "banners": {
+                  "low": f"https://{os.environ.get('GITHUB_REPOSITORY').split('/')[0].lower()}.github.io/{os.environ.get('PLUGIN_SLUG')}/assets/banner-772x250.avif",
+                  "high": f"https://{os.environ.get('GITHUB_REPOSITORY').split('/')[0].lower()}.github.io/{os.environ.get('PLUGIN_SLUG')}/assets/banner-1544x500.avif"
+              },
+              "icons": {
+                  "default": f"https://s.w.org/plugins/geopattern-icon/{os.environ.get('PLUGIN_SLUG')}.svg"
+              }
+          }
+
+          os.makedirs("gh-pages-json", exist_ok=True)
+          with open(f"gh-pages-json/plugin_{os.environ.get('PLUGIN_SLUG')}.json", "w", encoding="utf-8") as f:
+              json.dump(plugin, f, indent=2, ensure_ascii=False)
+
+      # 10. Generate PHPDoc documentation
+      - name: Generate PHPDoc API documentation
+        run: |
+          wget https://phpdoc.org/phpDocumentor.phar -O phpDocumentor.phar
+          chmod +x phpDocumentor.phar
+          ./phpDocumentor.phar run --config=phpdoc.xml
+          echo "PHPDoc documentation generated in docs/"
+
+      # 11. Prepare for deployment
+      - name: Prepare gh-pages deployment
+        run: |
+          mkdir -p gh-pages-deploy
+          cp -r gh-pages-json/* gh-pages-deploy/
+          cp -r gh-pages-html/* gh-pages-deploy/
+          if [ -d "docs" ]; then
+            cp -r docs gh-pages-deploy/
+          fi
+          if [ -d "assets" ]; then
+            cp -r assets gh-pages-deploy/
+          fi
+
+      # 12. Deploy to GitHub Pages
+      - name: Deploy to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: gh-pages-deploy
+          publish_branch: gh-pages
+          keep_files: false

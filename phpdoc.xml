@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<phpdocumentor
+    configVersion="3"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="https://www.phpdoc.org"
+    xsi:noNamespaceSchemaLocation="https://docs.phpdoc.org/latest/phpdoc.xsd"
+>
+    <title>JPKCom ACF (Pro) Enable Shortcode</title>
+    <paths>
+        <output>docs</output>
+    </paths>
+    <version number="2.0.3">
+        <folder>docs</folder>
+        <api>
+            <source dsn=".">
+                <path>jpkcom-acf-shortcode-enable.php</path>
+                <path>includes</path>
+            </source>
+            <output>docs</output>
+            <ignore hidden="true" symlinks="true">
+                <path>vendor/*</path>
+                <path>languages/*</path>
+                <path>assets/*</path>
+                <path>wp/*</path>
+                <path>.git/*</path>
+                <path>.github/*</path>
+                <path>.claude/*</path>
+                <path>*.py</path>
+                <path>*.md</path>
+                <path>*.xml</path>
+                <path>*.mo</path>
+                <path>*.po</path>
+                <path>*.pot</path>
+            </ignore>
+            <default-package-name>JPKComAcfShortcodeEnable</default-package-name>
+        </api>
+    </version>
+    <template name="default"/>
+    <setting name="graphs.enabled" value="true"/>
+    <setting name="graphs.format" value="svg"/>
+</phpdocumentor>
