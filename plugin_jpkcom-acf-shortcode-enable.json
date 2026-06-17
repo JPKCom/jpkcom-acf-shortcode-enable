@@ -1,0 +1,49 @@
+{
+  "name": "JPKCom ACF (Pro) Enable Shortcode",
+  "display_name": "JPKCom ACF (Pro) Enable Shortcode",
+  "slug": "jpkcom-acf-shortcode-enable",
+  "version": "2.0.3",
+  "download_url": "https://github.com/JPKCom/jpkcom-acf-shortcode-enable/releases/download/v2.0.3/jpkcom-acf-shortcode-enable.zip",
+  "checksum_sha256": "2ad4438f776e31a2fca2bd81b515ae772f1fce0c53556767ef8b53d44cd6c46b",
+  "requires": "6.9",
+  "tested": "7.0",
+  "requires_php": "8.3",
+  "author": "Jean Pierre Kolb <jpk@jpkc.com>",
+  "author_profile": "https://www.jpkc.com",
+  "contributors": {
+    "JPKCom": {
+      "profile": "https://profiles.wordpress.org/JPKCom",
+      "avatar": "https://wordpress.org/grav-redirect.php?user=JPKCom&s=36"
+    }
+  },
+  "tags": [
+    "ACF",
+    "Shortcode",
+    "HTML",
+    "Gutenberg"
+  ],
+  "license": "GPL-2.0-or-later",
+  "license_uri": "https://www.gnu.org/licenses/gpl-2.0.html",
+  "text_domain": "",
+  "domain_path": "/languages",
+  "network": true,
+  "requires_plugins": [
+    "advanced-custom-fields-pro"
+  ],
+  "homepage": "https://github.com/JPKCom/jpkcom-acf-shortcode-enable",
+  "last_updated": "2026-06-17",
+  "sections": {
+    "description": "<p>Shortcodes can be used within a WYSIWYG to display another field’s\nvalue.</p>\n<p>For more details visit:\nhttps://www.advancedcustomfields.com/resources/shortcode/</p>\n<h3 id=\"documentation\">Documentation</h3>\n<p><strong>API Documentation:</strong> Complete PHPDoc-generated API\ndocumentation is available at: <a\nhref=\"https://jpkcom.github.io/jpkcom-acf-shortcode-enable/docs/\">https://jpkcom.github.io/jpkcom-acf-shortcode-enable/docs/</a></p>\n",
+    "installation": "<ol type=\"1\">\n<li>In your admin panel, go to ‘Plugins’ &gt; and click the ‘Add New’\nbutton.</li>\n<li>Click Upload Plugin and ‘Choose File’, then select the Plugin’s .zip\nfile. Click ‘Install Now’.</li>\n<li>Make sure ‘Advanced Custom Fields’ plugin is activated.</li>\n<li>Click ‘Activate’ to use the plugin right away.</li>\n</ol>\n",
+    "changelog": "<h3 id=\"section\">2.0.3</h3>\n<ul>\n<li>Added secure self-hosted plugin updates via GitHub with SHA256\nchecksum verification</li>\n<li>Added an automated release workflow (builds the ZIP, generates the\nmanifest and deploys to gh-pages on tag push)</li>\n<li>Raised the minimum WordPress version to 6.9 and “Tested up to” to\nWordPress 7.0</li>\n<li>Switched license metadata to the SPDX identifier\n<code>GPL-2.0-or-later</code> with the HTTPS license URI</li>\n<li>Added PHPDoc-generated API documentation, built and deployed to\ngh-pages on release</li>\n<li>Hardening: enabled <code>declare(strict_types=1)</code>, prefixed\nand guarded the ACF init callback\n(<code>jpkcom_acf_enable_shortcode</code>)</li>\n</ul>\n<h3 id=\"section-1\">2.0.2</h3>\n<ul>\n<li>Tested up to WP v6.8</li>\n</ul>\n<h3 id=\"section-2\">2.0.1</h3>\n<ul>\n<li>Fix Stable tag</li>\n</ul>\n<h3 id=\"section-3\">2.0.0</h3>\n<ul>\n<li>Added README.md</li>\n<li>Plugin meta data update</li>\n</ul>\n<h3 id=\"section-4\">1.0.0</h3>\n<ul>\n<li>Initial Release</li>\n</ul>\n",
+    "faq": "\n"
+  },
+  "readme_html": "<h1 id=\"jpkcom-acf-pro-enable-shortcode\">JPKCom ACF (Pro) Enable\nShortcode</h1>\n<p><strong>Plugin Name:</strong> JPKCom ACF (Pro) Enable Shortcode<br />\n<strong>Plugin URI:</strong>\nhttps://github.com/JPKCom/jpkcom-acf-shortcode-enable<br />\n<strong>Description:</strong> Shortcodes can be used within a WYSIWYG to\ndisplay another field’s value.<br />\n<strong>Version:</strong> 2.0.3<br />\n<strong>Author:</strong> Jean Pierre Kolb <a href=\"mailto:jpk@jpkc.com\"\nclass=\"email\">jpk@jpkc.com</a><br />\n<strong>Author URI:</strong> https://www.jpkc.com<br />\n<strong>Contributors:</strong> JPKCom<br />\n<strong>Tags:</strong> ACF, Shortcode, HTML, Gutenberg<br />\n<strong>Requires Plugins:</strong> advanced-custom-fields-pro<br />\n<strong>Requires at least:</strong> 6.9<br />\n<strong>Tested up to:</strong> 7.0<br />\n<strong>Requires PHP:</strong> 8.3<br />\n<strong>Stable tag:</strong> 2.0.3<br />\n<strong>License:</strong> GPL-2.0-or-later<br />\n<strong>License URI:</strong>\nhttps://www.gnu.org/licenses/gpl-2.0.html</p>\n<p>Shortcodes can be used within a WYSIWYG to display another field’s\nvalue.</p>\n<h2 id=\"description\">Description</h2>\n<p>Shortcodes can be used within a WYSIWYG to display another field’s\nvalue.</p>\n<p>For more details visit:\nhttps://www.advancedcustomfields.com/resources/shortcode/</p>\n<h3 id=\"documentation\">Documentation</h3>\n<p><strong>API Documentation:</strong> Complete PHPDoc-generated API\ndocumentation is available at: <a\nhref=\"https://jpkcom.github.io/jpkcom-acf-shortcode-enable/docs/\">https://jpkcom.github.io/jpkcom-acf-shortcode-enable/docs/</a></p>\n<h2 id=\"installation\">Installation</h2>\n<ol type=\"1\">\n<li>In your admin panel, go to ‘Plugins’ &gt; and click the ‘Add New’\nbutton.</li>\n<li>Click Upload Plugin and ‘Choose File’, then select the Plugin’s .zip\nfile. Click ‘Install Now’.</li>\n<li>Make sure ‘Advanced Custom Fields’ plugin is activated.</li>\n<li>Click ‘Activate’ to use the plugin right away.</li>\n</ol>\n<h2 id=\"changelog\">Changelog</h2>\n<h3 id=\"section\">2.0.3</h3>\n<ul>\n<li>Added secure self-hosted plugin updates via GitHub with SHA256\nchecksum verification</li>\n<li>Added an automated release workflow (builds the ZIP, generates the\nmanifest and deploys to gh-pages on tag push)</li>\n<li>Raised the minimum WordPress version to 6.9 and “Tested up to” to\nWordPress 7.0</li>\n<li>Switched license metadata to the SPDX identifier\n<code>GPL-2.0-or-later</code> with the HTTPS license URI</li>\n<li>Added PHPDoc-generated API documentation, built and deployed to\ngh-pages on release</li>\n<li>Hardening: enabled <code>declare(strict_types=1)</code>, prefixed\nand guarded the ACF init callback\n(<code>jpkcom_acf_enable_shortcode</code>)</li>\n</ul>\n<h3 id=\"section-1\">2.0.2</h3>\n<ul>\n<li>Tested up to WP v6.8</li>\n</ul>\n<h3 id=\"section-2\">2.0.1</h3>\n<ul>\n<li>Fix Stable tag</li>\n</ul>\n<h3 id=\"section-3\">2.0.0</h3>\n<ul>\n<li>Added README.md</li>\n<li>Plugin meta data update</li>\n</ul>\n<h3 id=\"section-4\">1.0.0</h3>\n<ul>\n<li>Initial Release</li>\n</ul>\n",
+  "banners": {
+    "low": "https://jpkcom.github.io/jpkcom-acf-shortcode-enable/assets/banner-772x250.avif",
+    "high": "https://jpkcom.github.io/jpkcom-acf-shortcode-enable/assets/banner-1544x500.avif"
+  },
+  "icons": {
+    "default": "https://s.w.org/plugins/geopattern-icon/jpkcom-acf-shortcode-enable.svg"
+  }
+}

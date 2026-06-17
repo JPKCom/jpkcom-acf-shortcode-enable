@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>JPKCom Plugin Docs</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/simpledotcss/2.3.7/simple.min.css" />
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Plugin Documentation</h1>
+</header>
+<h1 id="jpkcom-acf-pro-enable-shortcode">JPKCom ACF (Pro) Enable
+Shortcode</h1>
+<p><strong>Plugin Name:</strong> JPKCom ACF (Pro) Enable Shortcode<br />
+<strong>Plugin URI:</strong>
+https://github.com/JPKCom/jpkcom-acf-shortcode-enable<br />
+<strong>Description:</strong> Shortcodes can be used within a WYSIWYG to
+display another field’s value.<br />
+<strong>Version:</strong> 2.0.3<br />
+<strong>Author:</strong> Jean Pierre Kolb <a href="mailto:jpk@jpkc.com"
+class="email">jpk@jpkc.com</a><br />
+<strong>Author URI:</strong> https://www.jpkc.com<br />
+<strong>Contributors:</strong> JPKCom<br />
+<strong>Tags:</strong> ACF, Shortcode, HTML, Gutenberg<br />
+<strong>Requires Plugins:</strong> advanced-custom-fields-pro<br />
+<strong>Requires at least:</strong> 6.9<br />
+<strong>Tested up to:</strong> 7.0<br />
+<strong>Requires PHP:</strong> 8.3<br />
+<strong>Stable tag:</strong> 2.0.3<br />
+<strong>License:</strong> GPL-2.0-or-later<br />
+<strong>License URI:</strong>
+https://www.gnu.org/licenses/gpl-2.0.html</p>
+<p>Shortcodes can be used within a WYSIWYG to display another field’s
+value.</p>
+<h2 id="description">Description</h2>
+<p>Shortcodes can be used within a WYSIWYG to display another field’s
+value.</p>
+<p>For more details visit:
+https://www.advancedcustomfields.com/resources/shortcode/</p>
+<h3 id="documentation">Documentation</h3>
+<p><strong>API Documentation:</strong> Complete PHPDoc-generated API
+documentation is available at: <a
+href="https://jpkcom.github.io/jpkcom-acf-shortcode-enable/docs/">https://jpkcom.github.io/jpkcom-acf-shortcode-enable/docs/</a></p>
+<h2 id="installation">Installation</h2>
+<ol type="1">
+<li>In your admin panel, go to ‘Plugins’ &gt; and click the ‘Add New’
+button.</li>
+<li>Click Upload Plugin and ‘Choose File’, then select the Plugin’s .zip
+file. Click ‘Install Now’.</li>
+<li>Make sure ‘Advanced Custom Fields’ plugin is activated.</li>
+<li>Click ‘Activate’ to use the plugin right away.</li>
+</ol>
+<h2 id="changelog">Changelog</h2>
+<h3 id="section">2.0.3</h3>
+<ul>
+<li>Added secure self-hosted plugin updates via GitHub with SHA256
+checksum verification</li>
+<li>Added an automated release workflow (builds the ZIP, generates the
+manifest and deploys to gh-pages on tag push)</li>
+<li>Raised the minimum WordPress version to 6.9 and “Tested up to” to
+WordPress 7.0</li>
+<li>Switched license metadata to the SPDX identifier
+<code>GPL-2.0-or-later</code> with the HTTPS license URI</li>
+<li>Added PHPDoc-generated API documentation, built and deployed to
+gh-pages on release</li>
+<li>Hardening: enabled <code>declare(strict_types=1)</code>, prefixed
+and guarded the ACF init callback
+(<code>jpkcom_acf_enable_shortcode</code>)</li>
+</ul>
+<h3 id="section-1">2.0.2</h3>
+<ul>
+<li>Tested up to WP v6.8</li>
+</ul>
+<h3 id="section-2">2.0.1</h3>
+<ul>
+<li>Fix Stable tag</li>
+</ul>
+<h3 id="section-3">2.0.0</h3>
+<ul>
+<li>Added README.md</li>
+<li>Plugin meta data update</li>
+</ul>
+<h3 id="section-4">1.0.0</h3>
+<ul>
+<li>Initial Release</li>
+</ul>
+</body>
+</html>
