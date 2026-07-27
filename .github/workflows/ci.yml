@@ -1,0 +1,140 @@
+name: CI
+
+# Läuft auf jedem Pull Request. Vorher prüfte nichts die PRs dieses Repos –
+# damit gab es auch keinen Status-Check, auf den ein Auto-Merge warten könnte.
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Lint & Guards
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262  # v4.4.0
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240  # 2.37.2
+        with:
+          php-version: '8.3'
+          coverage: none
+
+      - name: Setup Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065  # v5.6.0
+        with:
+          python-version: '3.x'
+
+      - name: PHP syntax check (php -l, alle Dateien)
+        run: |
+          set -euo pipefail
+          find_php() {
+            find . -name '*.php' \
+              -not -path './.git/*' \
+              -not -path './vendor/*' \
+              -not -path './node_modules/*' "$@"
+          }
+          echo "Prüfe $(find_php | wc -l) PHP-Dateien ..."
+          find_php -print0 | xargs -0 -r -n1 -P4 php -l > /dev/null
+          echo "OK – keine Syntaxfehler."
+
+      - name: Ungültige benannte Argumente an internen PHP-Funktionen
+        # Fängt die Klasse von Fehlern, die in diesem Codebase real aufgetreten
+        # ist: sprintf(format:, values:) bindet an einen variadischen Parameter
+        # und wirft zur Laufzeit ArgumentCountError – php -l sieht das nicht.
+        run: |
+          cat > /tmp/named_args_check.php <<'CHECK'
+          <?php
+          $bad = [];
+          $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator('.'));
+          foreach ($it as $f) {
+              $p = $f->getPathname();
+              if (!str_ends_with($p, '.php')) continue;
+              if (str_contains($p, '/vendor/') || str_contains($p, '/node_modules/') || str_contains($p, '/.git/')) continue;
+              $t = token_get_all(file_get_contents($p));
+              $n = count($t);
+              for ($i = 0; $i < $n; $i++) {
+                  if (!is_array($t[$i]) || $t[$i][0] !== T_STRING) continue;
+                  $prev = $i - 1;
+                  while ($prev >= 0 && is_array($t[$prev]) && in_array($t[$prev][0], [T_WHITESPACE, T_COMMENT, T_DOC_COMMENT], true)) $prev--;
+                  if ($prev >= 0 && is_array($t[$prev]) && in_array($t[$prev][0], [T_OBJECT_OPERATOR, T_DOUBLE_COLON, T_FUNCTION, T_NEW, T_NULLSAFE_OBJECT_OPERATOR], true)) continue;
+                  $j = $i + 1;
+                  while ($j < $n && is_array($t[$j]) && $t[$j][0] === T_WHITESPACE) $j++;
+                  if ($j >= $n || $t[$j] !== '(') continue;
+                  $fn = $t[$i][1];
+                  if (!function_exists($fn)) continue;
+                  $r = new ReflectionFunction($fn);
+                  if (!$r->isInternal()) continue;
+                  $names = []; $vnames = [];
+                  foreach ($r->getParameters() as $prm) {
+                      $names[] = $prm->getName();
+                      if ($prm->isVariadic()) $vnames[] = $prm->getName();
+                  }
+                  $depth = 0;
+                  for ($k = $j; $k < $n; $k++) {
+                      $tok = $t[$k];
+                      if ($tok === '(' || $tok === '[' || $tok === '{') { $depth++; continue; }
+                      if ($tok === ')' || $tok === ']' || $tok === '}') { $depth--; if ($depth === 0) break; continue; }
+                      if ($depth !== 1) continue;
+                      if (is_array($tok) && $tok[0] === T_STRING) {
+                          $m = $k + 1;
+                          while ($m < $n && is_array($t[$m]) && $t[$m][0] === T_WHITESPACE) $m++;
+                          if ($m < $n && $t[$m] === ':') {
+                              $param = $tok[1];
+                              $isVar = in_array($param, $vnames, true);
+                              if (!in_array($param, $names, true) || $isVar) {
+                                  $why = $isVar ? 'bindet an variadischen Parameter -> ArgumentCountError' : 'unbekannter Parametername';
+                                  $bad[] = sprintf('%s:%d  %s(… %s: …)  %s', $p, $tok[2], $fn, $param, $why);
+                              }
+                          }
+                      }
+                  }
+              }
+          }
+          if ($bad) {
+              foreach (array_unique($bad) as $b) fwrite(STDERR, "::error::$b\n");
+              exit(1);
+          }
+          echo "OK – keine ungültigen benannten Argumente.\n";
+          CHECK
+          php /tmp/named_args_check.php
+
+      - name: Workflow- und Dependabot-YAML validieren
+        run: |
+          python3 -c "import yaml" 2>/dev/null || python3 -m pip install --quiet pyyaml
+          python3 - <<'PY'
+          import sys, pathlib, yaml
+          bad = 0
+          for f in sorted(pathlib.Path('.github').rglob('*.yml')):
+              try:
+                  yaml.safe_load(f.read_text(encoding='utf-8'))
+              except Exception as e:
+                  print(f"::error file={f}::{e}")
+                  bad = 1
+          sys.exit(bad)
+          PY
+          echo "OK – YAML valide."
+
+      - name: GitHub Actions müssen auf Commit-SHA gepinnt sein
+        # Verhindert, dass ein Update (auch ein Dependabot-PR) die Pins wieder
+        # auf bewegliche Tags wie @v4 zurückdreht. Ein Tag lässt sich umhängen,
+        # ein SHA nicht – und dieser Workflow baut die ZIP samt Prüfsumme, der
+        # der Auto-Updater vertraut.
+        run: |
+          set -euo pipefail
+          # Beide gueltigen YAML-Formen abdecken: "uses:" und "- uses:".
+          if unpinned=$(grep -rnE '^[[:space:]]*(-[[:space:]]+)?uses:' .github/workflows/ | grep -vE '@[0-9a-f]{40}'); then
+            echo "$unpinned" | while IFS= read -r line; do
+              echo "::error::Nicht auf 40-stelligen Commit-SHA gepinnt: $line"
+            done
+            exit 1
+          fi
+          echo "OK – alle Actions auf Commit-SHA gepinnt."

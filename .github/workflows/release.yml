@@ -15,7 +15,7 @@ jobs:
     steps:
       # 1. Checkout repository
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262  # v4.4.0
 
       # 2. Setup variables
       - name: Setup variables
@@ -31,7 +31,7 @@ jobs:
 
       # 3. Setup PHP
       - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240  # 2.37.2
         with:
           php-version: '8.3'
           tools: composer
@@ -39,7 +39,7 @@ jobs:
 
       # 4. Setup Python
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065  # v5.6.0
         with:
           python-version: "3.x"
 
@@ -104,7 +104,7 @@ jobs:
         run: |
           STAGING_DIR="${{ env.PLUGIN_SLUG }}"
           mkdir -p "$STAGING_DIR"
-          rsync -a --exclude='.git' --exclude='.gitignore' --exclude='.github' --exclude='.DS_Store' --exclude='*.py' --exclude='CLAUDE.md' --exclude='.claude' --exclude='gh-pages-*' --exclude='docs' --exclude='phpdoc' --exclude='phpdoc.xml' --exclude='phpDocumentor.phar' . "$STAGING_DIR/"
+          rsync -a --exclude='.git' --exclude='.gitignore' --exclude='.github' --exclude='.DS_Store' --exclude='*~' --exclude='*.bak' --exclude='*.orig' --exclude='messages.mo' --exclude='*.py' --exclude='CLAUDE.md' --exclude='.claude' --exclude='gh-pages-*' --exclude='docs' --exclude='phpdoc' --exclude='phpdoc.xml' --exclude='phpDocumentor.phar' . "$STAGING_DIR/"
           zip -r "${{ env.ZIP_FILE }}" "$STAGING_DIR"
           rm -rf "$STAGING_DIR"
 
@@ -119,7 +119,7 @@ jobs:
 
       # 8. Upload ZIP and checksum to GitHub release
       - name: Upload ZIP and checksum to GitHub release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65  # v2.6.2
         with:
           tag_name: ${{ github.ref_name }}
           generate_release_notes: true
@@ -229,7 +229,7 @@ jobs:
 
       # 12. Deploy to GitHub Pages
       - name: Deploy to gh-pages
-        uses: peaceiris/actions-gh-pages@v4
+        uses: peaceiris/actions-gh-pages@84c30a85c19949d7eee79c4ff27748b70285e453  # v4.1.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: gh-pages-deploy

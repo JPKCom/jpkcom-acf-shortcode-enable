@@ -21,8 +21,11 @@
  *
  * Namespace: JPKComAcfShortcodeEnableGitUpdate
  * PHP Version: 8.3+
- * WordPress Version: 6.8+
+ * WordPress Version: 6.8+ (runtime floor; the plugins themselves require 6.9+)
  *
+ * @since 1.3.0 Checksum is now mandatory (fail closed) and the verified file is
+ *              handed to WP_Upgrader instead of being re-downloaded; failed
+ *              manifest fetches are negatively cached
  * @since 1.2.0 Added SHA256 checksum verification
  * @since 1.0.0 Initial release with GitHub integration
  */
@@ -117,6 +120,15 @@ final class JPKComGitPluginUpdater {
         $remote = get_transient( $this->cache_key );
 
         if ( false === $remote || ! $this->cache_enabled ) {
+            // Negative caching: if a recent fetch failed, stay quiet for a while.
+            // Every JPKCom plugin carries its own updater instance, and each one
+            // hooks 'site_transient_update_plugins'. Without this guard a slow or
+            // unreachable manifest host costs one blocking 15 s request *per
+            // plugin* on every admin request that triggers an update check.
+            if ( get_transient( $this->cache_key . '_fail' ) ) {
+                return null;
+            }
+
             // Race condition prevention: Check if another request is already fetching
             $lock_key = $this->cache_key . '_lock';
             if ( get_transient( $lock_key ) ) {
@@ -144,6 +156,7 @@ final class JPKComGitPluginUpdater {
                         $response->get_error_message()
                     ) );
                 }
+                $this->remember_failure();
                 return null;
             }
 
@@ -156,6 +169,7 @@ final class JPKComGitPluginUpdater {
                         $this->manifest_url
                     ) );
                 }
+                $this->remember_failure();
                 return null;
             }
 
@@ -167,6 +181,7 @@ final class JPKComGitPluginUpdater {
                         json_last_error_msg()
                     ) );
                 }
+                $this->remember_failure();
                 return null;
             }
 
@@ -174,6 +189,18 @@ final class JPKComGitPluginUpdater {
         }
 
         return is_object( value: $remote ) ? $remote : null;
+    }
+
+    /**
+     * Back off after a failed manifest fetch.
+     *
+     * Keeps a short-lived marker so the next requests skip the remote call
+     * instead of re-running it (and its timeout) on every page load.
+     *
+     * @return void
+     */
+    private function remember_failure(): void {
+        set_transient( $this->cache_key . '_fail', true, HOUR_IN_SECONDS );
     }
 
     /**
@@ -226,16 +253,19 @@ final class JPKComGitPluginUpdater {
             if ( is_string( value: $value ) ) {
                 $wp_contributors[$value] = [
                     'display_name' => sanitize_text_field( $value ),
-                    'profile'      => sprintf( format: 'https://profiles.wordpress.org/%s', values: $value ),
-                    'avatar'       => sprintf( format: 'https://wordpress.org/grav-redirect.php?user=%s&s=36', values: $value ),
+                    // Positional args only: 'values' is sprintf()'s variadic
+                    // parameter, and PHP rejects named arguments bound to a
+                    // variadic with ArgumentCountError.
+                    'profile'      => sprintf( 'https://profiles.wordpress.org/%s', $value ),
+                    'avatar'       => sprintf( 'https://wordpress.org/grav-redirect.php?user=%s&s=36', $value ),
                 ];
             } elseif ( is_array( value: $value ) || is_object( value: $value ) ) {
                 $value = (array) $value;
                 $wp_contributors[$key] = [
                     // `??` only catches null/missing; an empty-string display_name falls through to WP core's own username fallback.
                     'display_name' => sanitize_text_field( $value['display_name'] ?? $key ),
-                    'profile'      => $value['profile'] ?? sprintf( format: 'https://profiles.wordpress.org/%s', values: $key ),
-                    'avatar'       => $value['avatar']  ?? sprintf( format: 'https://wordpress.org/grav-redirect.php?user=%s&s=36', values: $key ),
+                    'profile'      => $value['profile'] ?? sprintf( 'https://profiles.wordpress.org/%s', $key ),
+                    'avatar'       => $value['avatar']  ?? sprintf( 'https://wordpress.org/grav-redirect.php?user=%s&s=36', $key ),
                 ];
             }
         }
@@ -246,8 +276,10 @@ final class JPKComGitPluginUpdater {
         $info->download_link    = ( ! empty( $remote->download_url ) && wp_http_validate_url( $remote->download_url ) )
             ? esc_url_raw( $remote->download_url )
             : '';
-        $info->requires         = sanitize_text_field( $remote->requires ?? '6.8' );
-        $info->tested           = sanitize_text_field( $remote->tested ?? '6.9' );
+        // Fallbacks only apply when the manifest omits these fields; keep them
+        // in sync with the plugin header (Requires at least / Tested up to).
+        $info->requires         = sanitize_text_field( $remote->requires ?? '6.9' );
+        $info->tested           = sanitize_text_field( $remote->tested ?? '7.0' );
         $info->requires_php     = sanitize_text_field( $remote->requires_php ?? '8.3' );
         $info->license          = sanitize_text_field( $remote->license ?? 'GPL-2.0-or-later' );
         $info->license_uri      = esc_url_raw( $remote->license_uri ?? 'https://www.gnu.org/licenses/gpl-2.0.html' );
@@ -259,7 +291,12 @@ final class JPKComGitPluginUpdater {
         $info->tags             = array_map( callback: 'sanitize_text_field', array: array_map( callback: 'trim', array: $tags ) );
 
         $info->network          = (bool) ( $remote->network ?? false );
-        $info->requires_plugins = is_array( $remote->requires_plugins ?? [] ) ? array_map( 'sanitize_text_field', $remote->requires_plugins ) : [];
+        // Resolve once: the previous form applied `?? []` to the is_array()
+        // check but then passed $remote->requires_plugins straight to
+        // array_map(), so a manifest omitting the field hit array_map(null)
+        // and fatalled the "View Details" modal with a TypeError.
+        $requires_plugins       = $remote->requires_plugins ?? [];
+        $info->requires_plugins = is_array( $requires_plugins ) ? array_map( 'sanitize_text_field', $requires_plugins ) : [];
         $info->text_domain      = sanitize_text_field( $remote->text_domain ?? '' );
         $info->domain_path      = sanitize_text_field( $remote->domain_path ?? '' );
         $info->last_updated     = sanitize_text_field( $remote->last_updated ?? '' );
@@ -391,7 +428,8 @@ final class JPKComGitPluginUpdater {
      * @param bool        $reply   Whether to bail without returning the package (default false).
      * @param string      $package The package file name or URL.
      * @param \WP_Upgrader $upgrader The WP_Upgrader instance.
-     * @return bool|\WP_Error True to proceed, WP_Error if verification fails.
+     * @return bool|string|\WP_Error Path to the verified package, $reply when the
+     *                               package is not ours, WP_Error if verification fails.
      */
     public function verify_download_checksum( $reply, string $package, \WP_Upgrader $upgrader ) {
         if ( ! wp_http_validate_url( $package ) ) {
@@ -410,19 +448,39 @@ final class JPKComGitPluginUpdater {
                 $is_our_package = true;
             }
         }
-        if ( ! $is_our_package && strpos( $package, $this->plugin_slug ) !== false ) {
-            $is_our_package = true;
+        if ( ! $is_our_package ) {
+            // Fallback heuristic. Match the slug against the ZIP's file name
+            // (release assets are published as "<slug>.zip") rather than as a
+            // loose substring of the whole URL: since this method now hands the
+            // downloaded file straight to WP_Upgrader, a sibling plugin whose
+            // slug merely occurs somewhere in the URL must not be able to claim
+            // — and thereby replace — another plugin's package.
+            $path = (string) wp_parse_url( $package, PHP_URL_PATH );
+            if ( basename( $path ) === $this->plugin_slug . '.zip' ) {
+                $is_our_package = true;
+            }
         }
         if ( ! $is_our_package ) {
             return $reply;
         }
 
-        if ( ! $remote || empty( $remote->checksum_sha256 ) ) {
-            // No checksum in manifest, allow download (backward compatibility).
-            if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-                error_log( 'JPKCom Plugin Updater: No checksum found in manifest, skipping verification' );
-            }
-            return $reply;
+        // Fail closed. Previously a manifest without a checksum simply skipped
+        // verification "for backward compatibility" — which meant anyone able to
+        // tamper with the manifest could disable the entire integrity check by
+        // dropping a single field. The release workflow always emits
+        // checksum_sha256, so a missing one is an error, not a legacy case.
+        if ( ! $remote ) {
+            return new \WP_Error(
+                'manifest_unavailable',
+                __( 'Security verification failed: the update manifest could not be loaded, so the package cannot be verified.', 'jpkcom-acf-shortcode-enable' )
+            );
+        }
+
+        if ( empty( $remote->checksum_sha256 ) ) {
+            return new \WP_Error(
+                'checksum_missing',
+                __( 'Security verification failed: the update manifest contains no SHA-256 checksum, so the package cannot be verified.', 'jpkcom-acf-shortcode-enable' )
+            );
         }
 
         // Download package temporarily
@@ -440,12 +498,11 @@ final class JPKComGitPluginUpdater {
         // Calculate SHA256 hash
         $calculated_hash = hash_file( 'sha256', $temp_file );
 
-        // Clean up temp file
-        @unlink( $temp_file );
-
         // Verify checksum (timing-safe).
-        $expected_hash = strtolower( trim( $remote->checksum_sha256 ) );
+        $expected_hash = strtolower( trim( (string) $remote->checksum_sha256 ) );
         if ( ! is_string( $calculated_hash ) || ! hash_equals( $expected_hash, $calculated_hash ) ) {
+            @unlink( $temp_file );
+
             $error_msg = sprintf(
                 /* translators: 1: expected SHA-256 hash, 2: calculated SHA-256 hash */
                 __( 'Security verification failed: Plugin checksum mismatch. Expected: %1$s, Got: %2$s', 'jpkcom-acf-shortcode-enable' ),
@@ -464,6 +521,15 @@ final class JPKComGitPluginUpdater {
             error_log( 'JPKCom Plugin Updater: Checksum verification successful' );
         }
 
-        return $reply;
+        // Hand the *verified* file to WP_Upgrader instead of returning $reply.
+        //
+        // Returning false here would let WP_Upgrader::download_package() fetch
+        // the package a second time and install those bytes — the ones we just
+        // hashed would be discarded, so the check verified something other than
+        // what gets installed (TOCTOU), at the cost of a duplicate download.
+        // Any non-false return value is used as the package, and because the
+        // returned path differs from $package, WP_Upgrader::run() sets
+        // $delete_package = true and removes this temp file after unpacking.
+        return $temp_file;
     }
 }
