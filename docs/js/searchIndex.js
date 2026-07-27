@@ -16,6 +16,11 @@ Search.appendIndex(
             "summary": "Fetch\u0020and\u0020decode\u0020the\u0020remote\u0020manifest\u0020file.",
             "url": "classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_get_remote_manifest"
         },                {
+            "fqsen": "\\JPKComAcfShortcodeEnableGitUpdate\\JPKComGitPluginUpdater\u003A\u003Aremember_failure\u0028\u0029",
+            "name": "remember_failure",
+            "summary": "Back\u0020off\u0020after\u0020a\u0020failed\u0020manifest\u0020fetch.",
+            "url": "classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_remember_failure"
+        },                {
             "fqsen": "\\JPKComAcfShortcodeEnableGitUpdate\\JPKComGitPluginUpdater\u003A\u003Aplugin_info\u0028\u0029",
             "name": "plugin_info",
             "summary": "Provide\u0020detailed\u0020plugin\u0020info\u0020in\u0020the\u0020\u201CView\u0020Details\u201D\u0020modal.",

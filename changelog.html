@@ -1,4 +1,29 @@
-<h3 id="section">2.0.3</h3>
+<h3 id="section">2.0.4</h3>
+<ul>
+<li>Security: update packages are now verified <em>before</em>
+installation — the verified file is handed to WordPress instead of being
+downloaded a second time, so the bytes that were checked are the bytes
+that get installed</li>
+<li>Security: a missing or unfetchable SHA-256 checksum now aborts the
+update instead of installing unverified code (previously it silently
+skipped verification)</li>
+<li>Security: pinned every GitHub Action to a full commit SHA and added
+Dependabot with a 7-day cooldown, so a moved tag can no longer change
+the release build</li>
+<li>Security: tightened which download the updater claims, so sibling
+plugins cannot match each other’s package</li>
+<li>Fixed: <code>sprintf()</code> calls in the updater bound named
+arguments to a variadic parameter, which raises
+<code>ArgumentCountError</code> on PHP 8.3</li>
+<li>Fixed: the “View Details” modal could fail with a
+<code>TypeError</code> when the manifest omitted
+<code>requires_plugins</code></li>
+<li>Performance: a failed manifest fetch is now cached for an hour
+instead of being retried on every admin request</li>
+<li>Added: CI workflow on every pull request (PHP lint, named-argument
+check, YAML validation, action-pinning guard)</li>
+</ul>
+<h3 id="section-1">2.0.3</h3>
 <ul>
 <li>Added secure self-hosted plugin updates via GitHub with SHA256
 checksum verification</li>
@@ -14,20 +39,20 @@ gh-pages on release</li>
 and guarded the ACF init callback
 (<code>jpkcom_acf_enable_shortcode</code>)</li>
 </ul>
-<h3 id="section-1">2.0.2</h3>
+<h3 id="section-2">2.0.2</h3>
 <ul>
 <li>Tested up to WP v6.8</li>
 </ul>
-<h3 id="section-2">2.0.1</h3>
+<h3 id="section-3">2.0.1</h3>
 <ul>
 <li>Fix Stable tag</li>
 </ul>
-<h3 id="section-3">2.0.0</h3>
+<h3 id="section-4">2.0.0</h3>
 <ul>
 <li>Added README.md</li>
 <li>Plugin meta data update</li>
 </ul>
-<h3 id="section-4">1.0.0</h3>
+<h3 id="section-5">1.0.0</h3>
 <ul>
 <li>Initial Release</li>
 </ul>
