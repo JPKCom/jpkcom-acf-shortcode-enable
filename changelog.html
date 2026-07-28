@@ -1,4 +1,18 @@
-<h3 id="section">2.0.4</h3>
+<h3 id="section">2.0.5</h3>
+<ul>
+<li>CI: the release step no longer copies the staging directory into
+itself, so the ZIP has no empty
+<code>jpkcom-acf-shortcode-enable/jpkcom-acf-shortcode-enable/</code>
+folder</li>
+<li>CI: bumped the pinned GitHub Actions (checkout v7.0.1, setup-python
+v7.0.0, action-gh-release v3.0.2, fetch-metadata v3.1.0), still pinned
+to full commit SHAs</li>
+<li>CI: the release ZIP now excludes the development-only
+<code>tests/</code> and <code>tools/</code> directories</li>
+<li>CI: security and regression tests now run on every pull request,
+where a plugin has them</li>
+</ul>
+<h3 id="section-1">2.0.4</h3>
 <ul>
 <li>Security: update packages are now verified <em>before</em>
 installation — the verified file is handed to WordPress instead of being
@@ -23,7 +37,7 @@ instead of being retried on every admin request</li>
 <li>Added: CI workflow on every pull request (PHP lint, named-argument
 check, YAML validation, action-pinning guard)</li>
 </ul>
-<h3 id="section-1">2.0.3</h3>
+<h3 id="section-2">2.0.3</h3>
 <ul>
 <li>Added secure self-hosted plugin updates via GitHub with SHA256
 checksum verification</li>
@@ -39,20 +53,20 @@ gh-pages on release</li>
 and guarded the ACF init callback
 (<code>jpkcom_acf_enable_shortcode</code>)</li>
 </ul>
-<h3 id="section-2">2.0.2</h3>
+<h3 id="section-3">2.0.2</h3>
 <ul>
 <li>Tested up to WP v6.8</li>
 </ul>
-<h3 id="section-3">2.0.1</h3>
+<h3 id="section-4">2.0.1</h3>
 <ul>
 <li>Fix Stable tag</li>
 </ul>
-<h3 id="section-4">2.0.0</h3>
+<h3 id="section-5">2.0.0</h3>
 <ul>
 <li>Added README.md</li>
 <li>Plugin meta data update</li>
 </ul>
-<h3 id="section-5">1.0.0</h3>
+<h3 id="section-6">1.0.0</h3>
 <ul>
 <li>Initial Release</li>
 </ul>
