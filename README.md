@@ -3,7 +3,7 @@
 **Plugin Name:** JPKCom ACF (Pro) Enable Shortcode  
 **Plugin URI:** https://github.com/JPKCom/jpkcom-acf-shortcode-enable  
 **Description:** Shortcodes can be used within a WYSIWYG to display another field’s value.  
-**Version:** 2.0.5  
+**Version:** 2.0.6  
 **Author:** Jean Pierre Kolb <jpk@jpkc.com>  
 **Author URI:** https://www.jpkc.com  
 **Contributors:** JPKCom  
@@ -12,7 +12,7 @@
 **Requires at least:** 6.9  
 **Tested up to:** 7.0  
 **Requires PHP:** 8.3  
-**Stable tag:** 2.0.5  
+**Stable tag:** 2.0.6  
 **License:** GPL-2.0-or-later  
 **License URI:** https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -41,6 +41,9 @@ For more details visit: https://www.advancedcustomfields.com/resources/shortcode
 
 
 ## Changelog
+
+### 2.0.6
+* Added: plugin banners (`assets/banner-1544x500.avif`, `assets/banner-772x250.avif`) — a plain `#3c4955` surface with no lettering. The update manifest already advertised these two URLs, but nothing was published under them, so the plugin card in wp-admin had a broken banner
 
 ### 2.0.5
 * CI: the release step no longer copies the staging directory into itself, so the ZIP has no empty `jpkcom-acf-shortcode-enable/jpkcom-acf-shortcode-enable/` folder
