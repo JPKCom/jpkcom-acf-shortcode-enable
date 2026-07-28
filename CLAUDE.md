@@ -39,7 +39,7 @@ The callback is `function_exists()`-guarded and `jpkcom_`-prefixed (renamed from
 
 | Constant | Value | Purpose |
 |----------|-------|---------|
-| `JPKCOM_ACF_SHORTCODE_ENABLE_VERSION` | `'2.0.4'` | Plugin version (sync with header/README/phpdoc.xml) |
+| `JPKCOM_ACF_SHORTCODE_ENABLE_VERSION` | `'2.0.5'` | Plugin version (sync with header/README/phpdoc.xml) |
 
 ---
 
