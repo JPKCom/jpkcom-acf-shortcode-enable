@@ -3,7 +3,7 @@
 Plugin Name: JPKCom ACF (Pro) Enable Shortcode
 Plugin URI: https://github.com/JPKCom/jpkcom-acf-shortcode-enable
 Description: Shortcodes can be used within a WYSIWYG to display another field’s value.
-Version: 2.0.5
+Version: 2.0.6
 Author: Jean Pierre Kolb <jpk@jpkc.com>
 Author URI: https://www.jpkc.com
 Contributors: JPKCom
@@ -12,7 +12,7 @@ Requires Plugins: advanced-custom-fields-pro
 Requires at least: 6.9
 Tested up to: 7.0
 Requires PHP: 8.3
-Stable tag: 2.0.5
+Stable tag: 2.0.6
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 */
@@ -30,7 +30,7 @@ if ( ! defined( constant_name: 'WPINC' ) ) {
  * @since 2.0.3
  */
 if ( ! defined( 'JPKCOM_ACF_SHORTCODE_ENABLE_VERSION' ) ) {
-    define( 'JPKCOM_ACF_SHORTCODE_ENABLE_VERSION', '2.0.5' );
+    define( 'JPKCOM_ACF_SHORTCODE_ENABLE_VERSION', '2.0.6' );
 }
 
 
