@@ -107,6 +107,25 @@ jobs:
           CHECK
           php /tmp/named_args_check.php
 
+      - name: Sicherheits-/Regressionstests (sofern vorhanden)
+        run: |
+          set -euo pipefail
+          if [ ! -d tests ]; then
+            echo "Kein tests/-Verzeichnis - uebersprungen."
+            exit 0
+          fi
+          shopt -s nullglob
+          found=0
+          for t in tests/test-*.php; do
+            found=1
+            echo "::group::$t"
+            php "$t"
+            echo "::endgroup::"
+          done
+          if [ $found -eq 0 ]; then
+            echo "Keine tests/test-*.php gefunden."
+          fi
+
       - name: Workflow- und Dependabot-YAML validieren
         run: |
           python3 -c "import yaml" 2>/dev/null || python3 -m pip install --quiet pyyaml

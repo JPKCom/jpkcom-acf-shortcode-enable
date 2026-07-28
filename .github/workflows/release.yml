@@ -104,7 +104,7 @@ jobs:
         run: |
           STAGING_DIR="${{ env.PLUGIN_SLUG }}"
           mkdir -p "$STAGING_DIR"
-          rsync -a --exclude="/$STAGING_DIR" --exclude='.git' --exclude='.gitignore' --exclude='.github' --exclude='.DS_Store' --exclude='*~' --exclude='*.bak' --exclude='*.orig' --exclude='messages.mo' --exclude='*.py' --exclude='CLAUDE.md' --exclude='.claude' --exclude='gh-pages-*' --exclude='docs' --exclude='phpdoc' --exclude='phpdoc.xml' --exclude='phpDocumentor.phar' . "$STAGING_DIR/"
+          rsync -a --exclude="/$STAGING_DIR" --exclude='.git' --exclude='.gitignore' --exclude='.github' --exclude='.DS_Store' --exclude='tests' --exclude='tools' --exclude='*~' --exclude='*.bak' --exclude='*.orig' --exclude='messages.mo' --exclude='*.py' --exclude='CLAUDE.md' --exclude='.claude' --exclude='gh-pages-*' --exclude='docs' --exclude='phpdoc' --exclude='phpdoc.xml' --exclude='phpDocumentor.phar' . "$STAGING_DIR/"
           zip -r "${{ env.ZIP_FILE }}" "$STAGING_DIR"
           rm -rf "$STAGING_DIR"
 
