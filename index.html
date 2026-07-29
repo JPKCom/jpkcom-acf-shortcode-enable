@@ -35,7 +35,7 @@ Shortcode</h1>
 https://github.com/JPKCom/jpkcom-acf-shortcode-enable<br />
 <strong>Description:</strong> Shortcodes can be used within a WYSIWYG to
 display another field’s value.<br />
-<strong>Version:</strong> 2.0.6<br />
+<strong>Version:</strong> 2.0.7<br />
 <strong>Author:</strong> Jean Pierre Kolb <a href="mailto:jpk@jpkc.com"
 class="email">jpk@jpkc.com</a><br />
 <strong>Author URI:</strong> https://www.jpkc.com<br />
@@ -43,9 +43,9 @@ class="email">jpk@jpkc.com</a><br />
 <strong>Tags:</strong> ACF, Shortcode, HTML, Gutenberg<br />
 <strong>Requires Plugins:</strong> advanced-custom-fields-pro<br />
 <strong>Requires at least:</strong> 6.9<br />
-<strong>Tested up to:</strong> 7.0<br />
+<strong>Tested up to:</strong> 7.1<br />
 <strong>Requires PHP:</strong> 8.3<br />
-<strong>Stable tag:</strong> 2.0.6<br />
+<strong>Stable tag:</strong> 2.0.7<br />
 <strong>License:</strong> GPL-2.0-or-later<br />
 <strong>License URI:</strong>
 https://www.gnu.org/licenses/gpl-2.0.html</p>
@@ -70,7 +70,19 @@ file. Click ‘Install Now’.</li>
 <li>Click ‘Activate’ to use the plugin right away.</li>
 </ol>
 <h2 id="changelog">Changelog</h2>
-<h3 id="section">2.0.6</h3>
+<h3 id="section">2.0.7</h3>
+<ul>
+<li>Changed: <code>Tested up to</code> raised to WordPress 7.1</li>
+<li>Changed: the bundled updater’s runtime floor now matches the
+plugin’s own minimum. It bailed out below WordPress 6.8 while the plugin
+header has required 6.9 for several releases, so the check could never
+fire on a supported installation</li>
+<li>CI: the release manifest’s fallback values for <code>requires</code>
+and <code>tested</code> now say 6.9 and 7.1. They only apply when the
+README metadata cannot be read, but a stale fallback would have
+published a minimum the plugin no longer supports</li>
+</ul>
+<h3 id="section-1">2.0.6</h3>
 <ul>
 <li>Added: plugin banners (<code>assets/banner-1544x500.avif</code>,
 <code>assets/banner-772x250.avif</code>) — a plain <code>#3c4955</code>
@@ -78,7 +90,7 @@ surface with no lettering. The update manifest already advertised these
 two URLs, but nothing was published under them, so the plugin card in
 wp-admin had a broken banner</li>
 </ul>
-<h3 id="section-1">2.0.5</h3>
+<h3 id="section-2">2.0.5</h3>
 <ul>
 <li>CI: the release step no longer copies the staging directory into
 itself, so the ZIP has no empty
@@ -92,7 +104,7 @@ to full commit SHAs</li>
 <li>CI: security and regression tests now run on every pull request,
 where a plugin has them</li>
 </ul>
-<h3 id="section-2">2.0.4</h3>
+<h3 id="section-3">2.0.4</h3>
 <ul>
 <li>Security: update packages are now verified <em>before</em>
 installation — the verified file is handed to WordPress instead of being
@@ -117,7 +129,7 @@ instead of being retried on every admin request</li>
 <li>Added: CI workflow on every pull request (PHP lint, named-argument
 check, YAML validation, action-pinning guard)</li>
 </ul>
-<h3 id="section-3">2.0.3</h3>
+<h3 id="section-4">2.0.3</h3>
 <ul>
 <li>Added secure self-hosted plugin updates via GitHub with SHA256
 checksum verification</li>
@@ -133,20 +145,20 @@ gh-pages on release</li>
 and guarded the ACF init callback
 (<code>jpkcom_acf_enable_shortcode</code>)</li>
 </ul>
-<h3 id="section-4">2.0.2</h3>
+<h3 id="section-5">2.0.2</h3>
 <ul>
 <li>Tested up to WP v6.8</li>
 </ul>
-<h3 id="section-5">2.0.1</h3>
+<h3 id="section-6">2.0.1</h3>
 <ul>
 <li>Fix Stable tag</li>
 </ul>
-<h3 id="section-6">2.0.0</h3>
+<h3 id="section-7">2.0.0</h3>
 <ul>
 <li>Added README.md</li>
 <li>Plugin meta data update</li>
 </ul>
-<h3 id="section-7">1.0.0</h3>
+<h3 id="section-8">1.0.0</h3>
 <ul>
 <li>Initial Release</li>
 </ul>
