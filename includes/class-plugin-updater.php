@@ -21,7 +21,7 @@
  *
  * Namespace: JPKComAcfShortcodeEnableGitUpdate
  * PHP Version: 8.3+
- * WordPress Version: 6.8+ (runtime floor; the plugins themselves require 6.9+)
+ * WordPress Version: 6.9+ (matches the plugin header)
  *
  * @since 1.3.0 Checksum is now mandatory (fail closed) and the verified file is
  *              handed to WP_Upgrader instead of being re-downloaded; failed
@@ -76,7 +76,7 @@ final class JPKComGitPluginUpdater {
         global $wp_version;
 
         // Environment check
-        if ( version_compare( version1: PHP_VERSION, version2: '8.3', operator: '<' ) || version_compare( version1: $wp_version, version2: '6.8', operator: '<' ) ) {
+        if ( version_compare( version1: PHP_VERSION, version2: '8.3', operator: '<' ) || version_compare( version1: $wp_version, version2: '6.9', operator: '<' ) ) {
             return;
         }
 
