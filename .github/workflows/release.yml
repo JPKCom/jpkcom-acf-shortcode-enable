@@ -59,7 +59,7 @@ jobs:
             pandoc README.md -f markdown -t html -o gh-pages-html/readme.html
           fi
 
-          # Original styled HTML für gh-pages Webseite (optional)
+          # Styled HTML for the gh-pages website (optional)
           pandoc README.md -f markdown -t html5 \
             -s -o gh-pages-html/index.html \
             --metadata title="Plugin Documentation" \
@@ -182,7 +182,7 @@ jobs:
               "license_uri": clean_meta_value(meta.get("LicenseURI", "https://www.gnu.org/licenses/gpl-2.0.html")),
               "text_domain": clean_meta_value(meta.get("TextDomain", "")),
               "domain_path": clean_meta_value(meta.get("DomainPath", "/languages")),
-              "network": str(meta.get("Network", "true")).lower() == "true",
+              "network": str(meta.get("Network", "false")).lower() == "true",
               "requires_plugins": [clean_meta_value(p.strip()) for p in meta.get("RequiresPlugins", "").split(",") if p.strip()],
               "homepage": clean_meta_value(meta.get("PluginURI", f"https://github.com/JPKCom/{os.environ.get('PLUGIN_SLUG')}")),
               "last_updated": os.environ.get("DATE"),

@@ -1,8 +1,16 @@
 name: CI
 
-# Läuft auf jedem Pull Request. Vorher prüfte nichts die PRs dieses Repos –
-# damit gab es auch keinen Status-Check, auf den ein Auto-Merge warten könnte.
+# Runs on every pull request. Before this workflow existed nothing checked the
+# PRs of this repo, so there was also no status check an auto-merge could wait
+# for.
+#
+# Also runs on every push to main: a required status check only applies to pull
+# requests, so a direct push with bypass rights skipped the checks entirely.
+# Tags are deliberately not covered - those are built by release.yml.
 on:
+  push:
+    branches:
+      - main
   pull_request:
   workflow_dispatch:
 
@@ -33,7 +41,7 @@ jobs:
         with:
           python-version: '3.x'
 
-      - name: PHP syntax check (php -l, alle Dateien)
+      - name: PHP syntax check (php -l, all files)
         run: |
           set -euo pipefail
           find_php() {
@@ -42,14 +50,14 @@ jobs:
               -not -path './vendor/*' \
               -not -path './node_modules/*' "$@"
           }
-          echo "Prüfe $(find_php | wc -l) PHP-Dateien ..."
+          echo "Checking $(find_php | wc -l) PHP files ..."
           find_php -print0 | xargs -0 -r -n1 -P4 php -l > /dev/null
-          echo "OK – keine Syntaxfehler."
+          echo "OK - no syntax errors."
 
-      - name: Ungültige benannte Argumente an internen PHP-Funktionen
-        # Fängt die Klasse von Fehlern, die in diesem Codebase real aufgetreten
-        # ist: sprintf(format:, values:) bindet an einen variadischen Parameter
-        # und wirft zur Laufzeit ArgumentCountError – php -l sieht das nicht.
+      - name: Invalid named arguments to internal PHP functions
+        # Catches the class of error that actually occurred in this codebase:
+        # sprintf(format:, values:) binds to a variadic parameter and throws
+        # ArgumentCountError at runtime - php -l does not see that.
         run: |
           cat > /tmp/named_args_check.php <<'CHECK'
           <?php
@@ -91,8 +99,8 @@ jobs:
                               $param = $tok[1];
                               $isVar = in_array($param, $vnames, true);
                               if (!in_array($param, $names, true) || $isVar) {
-                                  $why = $isVar ? 'bindet an variadischen Parameter -> ArgumentCountError' : 'unbekannter Parametername';
-                                  $bad[] = sprintf('%s:%d  %s(… %s: …)  %s', $p, $tok[2], $fn, $param, $why);
+                                  $why = $isVar ? 'binds to a variadic parameter -> ArgumentCountError' : 'unknown parameter name';
+                                  $bad[] = sprintf('%s:%d  %s(... %s: ...)  %s', $p, $tok[2], $fn, $param, $why);
                               }
                           }
                       }
@@ -103,15 +111,15 @@ jobs:
               foreach (array_unique($bad) as $b) fwrite(STDERR, "::error::$b\n");
               exit(1);
           }
-          echo "OK – keine ungültigen benannten Argumente.\n";
+          echo "OK - no invalid named arguments.\n";
           CHECK
           php /tmp/named_args_check.php
 
-      - name: Sicherheits-/Regressionstests (sofern vorhanden)
+      - name: Security and regression tests (if present)
         run: |
           set -euo pipefail
           if [ ! -d tests ]; then
-            echo "Kein tests/-Verzeichnis - uebersprungen."
+            echo "No tests/ directory - skipped."
             exit 0
           fi
           shopt -s nullglob
@@ -123,10 +131,10 @@ jobs:
             echo "::endgroup::"
           done
           if [ $found -eq 0 ]; then
-            echo "Keine tests/test-*.php gefunden."
+            echo "No tests/test-*.php found."
           fi
 
-      - name: Workflow- und Dependabot-YAML validieren
+      - name: Validate workflow and Dependabot YAML
         run: |
           python3 -c "import yaml" 2>/dev/null || python3 -m pip install --quiet pyyaml
           python3 - <<'PY'
@@ -140,20 +148,20 @@ jobs:
                   bad = 1
           sys.exit(bad)
           PY
-          echo "OK – YAML valide."
+          echo "OK - YAML valid."
 
-      - name: GitHub Actions müssen auf Commit-SHA gepinnt sein
-        # Verhindert, dass ein Update (auch ein Dependabot-PR) die Pins wieder
-        # auf bewegliche Tags wie @v4 zurückdreht. Ein Tag lässt sich umhängen,
-        # ein SHA nicht – und dieser Workflow baut die ZIP samt Prüfsumme, der
-        # der Auto-Updater vertraut.
+      - name: GitHub Actions must be pinned to a commit SHA
+        # Prevents an update (including a Dependabot PR) from turning the pins
+        # back into movable tags like @v4. A tag can be repointed, a SHA cannot
+        # - and this workflow builds the ZIP together with the checksum the
+        # auto-updater trusts.
         run: |
           set -euo pipefail
-          # Beide gueltigen YAML-Formen abdecken: "uses:" und "- uses:".
+          # Cover both valid YAML forms: "uses:" and "- uses:".
           if unpinned=$(grep -rnE '^[[:space:]]*(-[[:space:]]+)?uses:' .github/workflows/ | grep -vE '@[0-9a-f]{40}'); then
             echo "$unpinned" | while IFS= read -r line; do
-              echo "::error::Nicht auf 40-stelligen Commit-SHA gepinnt: $line"
+              echo "::error::Not pinned to a 40-character commit SHA: $line"
             done
             exit 1
           fi
-          echo "OK – alle Actions auf Commit-SHA gepinnt."
+          echo "OK - all actions pinned to a commit SHA."

@@ -1,27 +1,27 @@
-# Dependabot – hält die SHA-gepinnten GitHub Actions aktuell.
+# Dependabot - keeps the SHA-pinned GitHub Actions up to date.
 #
-# Die Actions in .github/workflows/ sind bewusst auf 40-stellige Commit-SHAs
-# gepinnt statt auf bewegliche Tags wie @v4: ein Tag lässt sich umhängen, ein
-# SHA nicht. Da der Release-Workflow die Plugin-ZIP *und* die SHA256-Summe
-# erzeugt, der der Auto-Updater vertraut, würde eine kompromittierte Action ein
-# manipuliertes ZIP mitsamt passender Prüfsumme ausliefern – die Prüfsumme
-# sichert den Transportweg, das Pinning den Build.
+# The actions in .github/workflows/ are deliberately pinned to 40-character
+# commit SHAs instead of movable tags like @v4: a tag can be repointed, a SHA
+# cannot. Since the release workflow builds the plugin ZIP *and* the SHA256
+# checksum the auto-updater trusts, a compromised action would ship a tampered
+# ZIP together with a matching checksum - the checksum secures the transport,
+# the pinning secures the build.
 #
-# Dependabot versteht SHA-Pins und aktualisiert SHA *und* Versionskommentar,
-# sodass Updates weiterhin ankommen – nur als bewusst gemergter PR.
+# Dependabot understands SHA pins and updates the SHA *and* the version comment,
+# so updates still arrive - just as a deliberately merged PR.
 version: 2
 updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
-    # Nie ein Release in seiner ersten Woche uebernehmen: kompromittierte
-    # Action-Releases fliegen typischerweise in diesem Fenster auf. Fuer das
-    # github-actions-Oekosystem unterstuetzt Dependabot nur 'default-days',
-    # die semver-*-days-Keys gibt es hier nicht.
+    # Never adopt a release during its first week: compromised action releases
+    # are typically discovered within that window. For the github-actions
+    # ecosystem Dependabot only supports 'default-days'; the semver-*-days keys
+    # do not exist here.
     cooldown:
       default-days: 7
-    # Ein gesammelter PR statt einer pro Action.
+    # One combined PR instead of one per action.
     groups:
       github-actions:
         patterns:
