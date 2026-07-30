@@ -3,7 +3,7 @@
 **Plugin Name:** JPKCom ACF (Pro) Enable Shortcode  
 **Plugin URI:** https://github.com/JPKCom/jpkcom-acf-shortcode-enable  
 **Description:** Shortcodes can be used within a WYSIWYG to display another field’s value.  
-**Version:** 2.0.8  
+**Version:** 2.0.9  
 **Author:** Jean Pierre Kolb <jpk@jpkc.com>  
 **Author URI:** https://www.jpkc.com  
 **Contributors:** JPKCom  
@@ -12,7 +12,7 @@
 **Requires at least:** 6.9  
 **Tested up to:** 7.1  
 **Requires PHP:** 8.3  
-**Stable tag:** 2.0.8  
+**Stable tag:** 2.0.9  
 **License:** GPL-2.0-or-later  
 **License URI:** https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -23,7 +23,19 @@ Shortcodes can be used within a WYSIWYG to display another field’s value.
 
 Shortcodes can be used within a WYSIWYG to display another field’s value.
 
+ACF disables the `[acf]` shortcode by default on any installation whose ACF was first activated on version 6.3 or later. This plugin turns it back on, and keeps it on: the setting is filtered on every read, so a later change from elsewhere cannot quietly switch it off again. On block themes it additionally lifts ACF's separate restriction that otherwise limits the shortcode to post content, so `[acf]` also works in template parts, widgets and blocks outside the content flow.
+
+If your ACF installation predates 6.3, the shortcode is already enabled and this plugin changes nothing.
+
+**Please note:** both of these are hardening defaults that ACF introduced deliberately. Enabling the shortcode is the point of this plugin — but it is worth deciding per site. ACF's output escaping is left untouched.
+
+Verified against **ACF Pro 6.8.6**.
+
 For more details visit: https://www.advancedcustomfields.com/resources/shortcode/
+
+### Requirements for a shortcode to actually output something
+
+Enabling the shortcode is necessary but not sufficient. ACF additionally requires that the field is **registered** (a bare post meta value is not enough — ACF resolves the name through its `_fieldname` reference row), that the field type supports bindings, and that the referenced post is publicly viewable. Previews need the `publish_posts` capability. When one of these is not met the shortcode outputs nothing, silently.
 
 
 ### Documentation
@@ -41,6 +53,13 @@ For more details visit: https://www.advancedcustomfields.com/resources/shortcode
 
 
 ## Changelog
+
+### 2.0.9
+* Fixed: on a block theme the `[acf]` shortcode produced nothing outside `the_content` — a template part, a widget or a block outside the content flow rendered empty, with no error and no log entry. ACF gates that separately from the shortcode setting (`acf_shortcode()`, api-template.php:1025-1030); the plugin now lifts it via `acf/shortcode/allow_in_block_themes_outside_content`. Measured on Twenty Twenty-Five: outside `the_content` empty before, the field value after. Classic themes were never affected — ACF skips the branch entirely
+* Changed: the shortcode setting is now also filtered on read (`acf/settings/enable_shortcode`, at `PHP_INT_MAX`) instead of relying solely on the one-shot `acf_update_setting()` on `acf/init`. `acf_get_setting()` applies that filter on every read and `acf_shortcode()` consults it at render time, so any later `acf_update_setting( 'enable_shortcode', false )` — from another plugin, or from ACF itself in a future release — used to win silently. Verified against ACF Pro 6.8.6 with a competing plugin writing false on `acf/init` priority 999: the shortcode stopped rendering before, keeps working now. The `acf_update_setting()` call stays so that readers of the raw setting see the enabled state too
+* Added: `tests/test-hooks.php` covers the hook surface and every callback; CI runs it on every pull request and push to `main`
+* Docs: documented why the shortcode is off in the first place (ACF only disables it by default for installations first activated on 6.3 or later, `acf.php:239-244`, so this plugin is a no-op on older installs), the block-theme restriction and that lifting it widens the scope beyond post content, and the further conditions ACF places on the shortcode — only registered fields resolved through the `_fieldname` reference meta, only field types supporting bindings, only publicly viewable posts, and an escaped value unless `acf/shortcode/allow_unsafe_html` says otherwise
+* Verified against ACF Pro **6.8.6** and WordPress 7.0.2. `Requires Plugins: advanced-custom-fields-pro` resolves against the installed plugin folder even though ACF Pro is not on wordpress.org — only the "install dependency" link is unavailable
 
 ### 2.0.8
 * Fixed: the update manifest no longer reports `network: true` for this plugin. The generator defaulted a missing `Network:` header to true, while WordPress' own default for a missing header is "not network-only". Metadata only — WordPress derives network-only from the plugin header via `is_network_only_plugin()`, not from the update manifest
