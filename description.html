@@ -1,7 +1,32 @@
 <p>Shortcodes can be used within a WYSIWYG to display another field’s
 value.</p>
+<p>ACF disables the <code>[acf]</code> shortcode by default on any
+installation whose ACF was first activated on version 6.3 or later. This
+plugin turns it back on, and keeps it on: the setting is filtered on
+every read, so a later change from elsewhere cannot quietly switch it
+off again. On block themes it additionally lifts ACF’s separate
+restriction that otherwise limits the shortcode to post content, so
+<code>[acf]</code> also works in template parts, widgets and blocks
+outside the content flow.</p>
+<p>If your ACF installation predates 6.3, the shortcode is already
+enabled and this plugin changes nothing.</p>
+<p><strong>Please note:</strong> both of these are hardening defaults
+that ACF introduced deliberately. Enabling the shortcode is the point of
+this plugin — but it is worth deciding per site. ACF’s output escaping
+is left untouched.</p>
+<p>Verified against <strong>ACF Pro 6.8.6</strong>.</p>
 <p>For more details visit:
 https://www.advancedcustomfields.com/resources/shortcode/</p>
+<h3
+id="requirements-for-a-shortcode-to-actually-output-something">Requirements
+for a shortcode to actually output something</h3>
+<p>Enabling the shortcode is necessary but not sufficient. ACF
+additionally requires that the field is <strong>registered</strong> (a
+bare post meta value is not enough — ACF resolves the name through its
+<code>_fieldname</code> reference row), that the field type supports
+bindings, and that the referenced post is publicly viewable. Previews
+need the <code>publish_posts</code> capability. When one of these is not
+met the shortcode outputs nothing, silently.</p>
 <h3 id="documentation">Documentation</h3>
 <p><strong>API Documentation:</strong> Complete PHPDoc-generated API
 documentation is available at: <a

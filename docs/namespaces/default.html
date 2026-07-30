@@ -128,7 +128,7 @@
             <dt class="phpdocumentor-table-of-contents__entry -constant -public">
     <a class="" href="namespaces/default.html#constant_JPKCOM_ACF_SHORTCODE_ENABLE_VERSION">JPKCOM_ACF_SHORTCODE_ENABLE_VERSION</a>
     <span>
-        &nbsp;: mixed&nbsp;= &#039;2.0.8&#039;                            </span>
+        &nbsp;: mixed&nbsp;= &#039;2.0.9&#039;                            </span>
 </dt>
 
     </dl>
@@ -178,7 +178,7 @@
     <span class="phpdocumentor-signature__visibility">public</span>
         <span class="phpdocumentor-signature__type">mixed</span>
     <span class="phpdocumentor-signature__name">JPKCOM_ACF_SHORTCODE_ENABLE_VERSION</span>
-    = <span class="phpdocumentor-signature__default-value">&#039;2.0.8&#039;</span>
+    = <span class="phpdocumentor-signature__default-value">&#039;2.0.9&#039;</span>
 </code>
 
 
@@ -205,7 +205,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="jpkcom-acf-shortcode-enable.php"><a href="files/jpkcom-acf-shortcode-enable.html">jpkcom-acf-shortcode-enable.php</a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">76</span>
+    <span class="phpdocumentor-element-found-in__line">78</span>
 
     </aside>
 
@@ -216,8 +216,10 @@
     <span class="phpdocumentor-signature__visibility"></span>
                     <span class="phpdocumentor-signature__name">jpkcom_acf_enable_shortcode</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">void</span></code>
 
-        <section class="phpdocumentor-description"><p>Turns on ACF's <code class="prettyprint">enable_shortcode</code> setting so field values can be rendered
-inside WYSIWYG content via the shortcode.</p>
+        <section class="phpdocumentor-description"><p>Writes ACF's <code class="prettyprint">enable_shortcode</code> setting so anything reading the raw
+setting (<code class="prettyprint">acf_raw_setting()</code>) sees the enabled state too. The read-time
+filter below is what actually guarantees it — see there for why both
+exist.</p>
 </section>
 
     
