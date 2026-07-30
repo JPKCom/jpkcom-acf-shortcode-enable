@@ -3,7 +3,7 @@
 **Plugin Name:** JPKCom ACF (Pro) Enable Shortcode  
 **Plugin URI:** https://github.com/JPKCom/jpkcom-acf-shortcode-enable  
 **Description:** Shortcodes can be used within a WYSIWYG to display another field’s value.  
-**Version:** 2.0.7  
+**Version:** 2.0.8  
 **Author:** Jean Pierre Kolb <jpk@jpkc.com>  
 **Author URI:** https://www.jpkc.com  
 **Contributors:** JPKCom  
@@ -12,7 +12,7 @@
 **Requires at least:** 6.9  
 **Tested up to:** 7.1  
 **Requires PHP:** 8.3  
-**Stable tag:** 2.0.7  
+**Stable tag:** 2.0.8  
 **License:** GPL-2.0-or-later  
 **License URI:** https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -41,6 +41,11 @@ For more details visit: https://www.advancedcustomfields.com/resources/shortcode
 
 
 ## Changelog
+
+### 2.0.8
+* Fixed: the update manifest no longer reports `network: true` for this plugin. The generator defaulted a missing `Network:` header to true, while WordPress' own default for a missing header is "not network-only". Metadata only — WordPress derives network-only from the plugin header via `is_network_only_plugin()`, not from the update manifest
+* CI: the lint and guard workflow now also runs on pushes to `main`. It only covered pull requests, so a direct push with bypass rights skipped every check
+* Changed: comments, workflow step names and CI output across the repository are now English throughout, and the developer notes in `CLAUDE.md` were translated and trimmed. No effect on the shipped plugin
 
 ### 2.0.7
 * Changed: `Tested up to` raised to WordPress 7.1
