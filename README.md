@@ -3,7 +3,7 @@
 **Plugin Name:** JPKCom ACF (Pro) Enable Shortcode  
 **Plugin URI:** https://github.com/JPKCom/jpkcom-acf-shortcode-enable  
 **Description:** Shortcodes can be used within a WYSIWYG to display another field’s value.  
-**Version:** 2.0.9  
+**Version:** 2.0.10  
 **Author:** Jean Pierre Kolb <jpk@jpkc.com>  
 **Author URI:** https://www.jpkc.com  
 **Contributors:** JPKCom  
@@ -12,9 +12,10 @@
 **Requires at least:** 6.9  
 **Tested up to:** 7.1  
 **Requires PHP:** 8.3  
-**Stable tag:** 2.0.9  
+**Stable tag:** 2.0.10  
 **License:** GPL-2.0-or-later  
-**License URI:** https://www.gnu.org/licenses/gpl-2.0.html
+**License URI:** https://www.gnu.org/licenses/gpl-2.0.html  
+**Update URI:** https://github.com/JPKCom/jpkcom-acf-shortcode-enable
 
 Shortcodes can be used within a WYSIWYG to display another field’s value.
 
@@ -53,6 +54,12 @@ Enabling the shortcode is necessary but not sufficient. ACF additionally require
 
 
 ## Changelog
+
+### 2.0.10
+* Security: the plugin header now carries `Update URI: https://github.com/JPKCom/jpkcom-acf-shortcode-enable`. Without it, WordPress also asks wordpress.org for updates under this plugin's slug, so a same-named plugin published there with a higher version would be offered as an update of this one. With the header, wordpress.org answers nothing for this plugin and updates come only from this repository
+* Changed: the updater keeps its manifest cache, its failure marker and its fetch lock in site transients. On multisite the network now fetches the manifest once instead of once per site; on a single site nothing changes. The old per-site entries expire on their own within a day
+* Changed: the release workflow downloads phpDocumentor from a fixed GitHub release and verifies its SHA-256 before running it, instead of executing whatever phpdoc.org serves that day. No effect on the shipped plugin
+* CI: `shivammathur/setup-php` pinned to 2.40.0
 
 ### 2.0.9
 * Fixed: on a block theme the `[acf]` shortcode produced nothing outside `the_content` — a template part, a widget or a block outside the content flow rendered empty, with no error and no log entry. ACF gates that separately from the shortcode setting (`acf_shortcode()`, api-template.php:1025-1030); the plugin now lifts it via `acf/shortcode/allow_in_block_themes_outside_content`. Measured on Twenty Twenty-Five: outside `the_content` empty before, the field value after. Classic themes were never affected — ACF skips the branch entirely
