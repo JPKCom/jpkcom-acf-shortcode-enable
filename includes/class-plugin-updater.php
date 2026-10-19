@@ -10,7 +10,7 @@
  * - URL validation and sanitization of all remote data
  * - Race condition prevention for manifest fetching
  * - Comprehensive error logging in WP_DEBUG mode
- * - Transient caching with 24-hour TTL
+ * - Site-transient caching with 24-hour TTL (one cache per multisite network)
  * - Backward compatibility with manifests without checksums
  *
  * Security Features:
@@ -23,6 +23,9 @@
  * PHP Version: 8.3+
  * WordPress Version: 6.9+ (matches the plugin header)
  *
+ * @since 1.4.0 Manifest cache, failure marker and fetch lock are site
+ *              transients, so a multisite network fetches the manifest once
+ *              instead of once per site
  * @since 1.3.0 Checksum is now mandatory (fail closed) and the verified file is
  *              handed to WP_Upgrader instead of being re-downloaded; failed
  *              manifest fetches are negatively cached
@@ -117,7 +120,7 @@ final class JPKComGitPluginUpdater {
      * @return ?object Decoded manifest or null on failure.
      */
     private function get_remote_manifest(): ?object {
-        $remote = get_transient( $this->cache_key );
+        $remote = get_site_transient( $this->cache_key );
 
         if ( false === $remote || ! $this->cache_enabled ) {
             // Negative caching: if a recent fetch failed, stay quiet for a while.
@@ -125,19 +128,19 @@ final class JPKComGitPluginUpdater {
             // hooks 'site_transient_update_plugins'. Without this guard a slow or
             // unreachable manifest host costs one blocking 15 s request *per
             // plugin* on every admin request that triggers an update check.
-            if ( get_transient( $this->cache_key . '_fail' ) ) {
+            if ( get_site_transient( $this->cache_key . '_fail' ) ) {
                 return null;
             }
 
             // Race condition prevention: Check if another request is already fetching
             $lock_key = $this->cache_key . '_lock';
-            if ( get_transient( $lock_key ) ) {
+            if ( get_site_transient( $lock_key ) ) {
                 // Another request is fetching, return null to avoid duplicate API calls
                 return null;
             }
 
             // Acquire lock for 30 seconds
-            set_transient( $lock_key, true, 30 );
+            set_site_transient( $lock_key, true, 30 );
 
             $response = wp_safe_remote_get( $this->manifest_url, [
                 'timeout' => 15,
@@ -145,7 +148,7 @@ final class JPKComGitPluginUpdater {
             ] );
 
             // Release lock
-            delete_transient( $lock_key );
+            delete_site_transient( $lock_key );
 
             // Error handling with logging
             if ( is_wp_error( $response ) ) {
@@ -185,7 +188,7 @@ final class JPKComGitPluginUpdater {
                 return null;
             }
 
-            set_transient( $this->cache_key, $remote, DAY_IN_SECONDS );
+            set_site_transient( $this->cache_key, $remote, DAY_IN_SECONDS );
         }
 
         return is_object( value: $remote ) ? $remote : null;
@@ -200,7 +203,7 @@ final class JPKComGitPluginUpdater {
      * @return void
      */
     private function remember_failure(): void {
-        set_transient( $this->cache_key . '_fail', true, HOUR_IN_SECONDS );
+        set_site_transient( $this->cache_key . '_fail', true, HOUR_IN_SECONDS );
     }
 
     /**
@@ -415,7 +418,7 @@ final class JPKComGitPluginUpdater {
              && isset( $options['action'], $options['type'] )
              && $options['action'] === 'update'
              && $options['type'] === 'plugin' ) {
-            delete_transient( $this->cache_key );
+            delete_site_transient( $this->cache_key );
         }
     }
 
@@ -489,6 +492,7 @@ final class JPKComGitPluginUpdater {
             return new \WP_Error(
                 'download_failed',
                 sprintf(
+                    /* translators: %s: Error message from the failed download */
                     __( 'Download failed: %s', 'jpkcom-acf-shortcode-enable' ),
                     $temp_file->get_error_message()
                 )

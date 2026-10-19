@@ -31,7 +31,7 @@ jobs:
 
       # 3. Setup PHP
       - name: Setup PHP
-        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240  # 2.37.2
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962  # 2.40.0
         with:
           php-version: '8.3'
           tools: composer
@@ -207,9 +207,21 @@ jobs:
               json.dump(plugin, f, indent=2, ensure_ascii=False)
 
       # 10. Generate PHPDoc documentation
+      # phpDocumentor is pinned to one GitHub release and checked against a
+      # hard-coded SHA256 before it runs: this job holds contents: write, and an
+      # unpinned phar would execute whatever the download host serves that day.
+      # To bump: take a release from
+      # https://github.com/phpDocumentor/phpDocumentor/releases, download its
+      # phpDocumentor.phar, compare sha256sum with the digest the release lists,
+      # then change PHPDOC_VERSION and PHPDOC_SHA256 together.
       - name: Generate PHPDoc API documentation
+        env:
+          PHPDOC_VERSION: '3.10.0'
+          PHPDOC_SHA256: 'fe1e7c23ba3329aa6f19ac3c807446159a431a195ec5d9163b0c281a15105207'
         run: |
-          wget https://phpdoc.org/phpDocumentor.phar -O phpDocumentor.phar
+          set -euo pipefail
+          wget -q "https://github.com/phpDocumentor/phpDocumentor/releases/download/v${PHPDOC_VERSION}/phpDocumentor.phar" -O phpDocumentor.phar
+          echo "${PHPDOC_SHA256}  phpDocumentor.phar" | sha256sum -c -
           chmod +x phpDocumentor.phar
           ./phpDocumentor.phar run --config=phpdoc.xml
           echo "PHPDoc documentation generated in docs/"
