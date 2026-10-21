@@ -198,7 +198,9 @@ jobs:
                   "high": f"https://{os.environ.get('GITHUB_REPOSITORY').split('/')[0].lower()}.github.io/{os.environ.get('PLUGIN_SLUG')}/assets/banner-1544x500.avif"
               },
               "icons": {
-                  "default": f"https://s.w.org/plugins/geopattern-icon/{os.environ.get('PLUGIN_SLUG')}.svg"
+                  "1x": f"https://{os.environ.get('GITHUB_REPOSITORY').split('/')[0].lower()}.github.io/{os.environ.get('PLUGIN_SLUG')}/assets/icon-128x128.png",
+                  "2x": f"https://{os.environ.get('GITHUB_REPOSITORY').split('/')[0].lower()}.github.io/{os.environ.get('PLUGIN_SLUG')}/assets/icon-256x256.png",
+                  "default": f"https://{os.environ.get('GITHUB_REPOSITORY').split('/')[0].lower()}.github.io/{os.environ.get('PLUGIN_SLUG')}/assets/icon-256x256.png"
               }
           }
 
