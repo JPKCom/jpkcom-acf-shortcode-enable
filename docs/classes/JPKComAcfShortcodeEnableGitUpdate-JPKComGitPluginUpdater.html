@@ -121,14 +121,22 @@
         <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="includes/class-plugin-updater.php"><a href="files/includes-class-plugin-updater.html"><abbr title="includes/class-plugin-updater.php">class-plugin-updater.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">51</span>
+    <span class="phpdocumentor-element-found-in__line">68</span>
 
     </aside>
 
             <p class="phpdocumentor-summary">Class JPKComGitPluginUpdater</p>
 
 
-    <section class="phpdocumentor-description"><p>Handles plugin updates from a GitHub-hosted JSON manifest.</p>
+    <section class="phpdocumentor-description"><p>Handles plugin updates from GitHub-hosted JSON manifests.</p>
+<p>Why a family: WordPress only runs the code of ACTIVE plugins, so a copy of this
+class inside an inactive plugin never hooks anything and that plugin would never
+be offered an update. Every JPKCom plugin therefore registers its copy in a
+shared registry, and the copy with the highest UPDATER_VERSION (ties: the first
+registered) does the work for every installed JPKCom plugin. All other 1.5+
+copies stay passive. Copies older than 1.5 do not know the registry and keep
+serving their own plugin; the leader leaves plugins whose old copy is loaded
+alone, so the two never disagree about a manifest or a package.</p>
 </section>
 
 
@@ -147,6 +155,89 @@
 
 
 
+<h4 id="toc-constants">
+    Constants
+    <a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#toc-constants" class="headerlink"><i class="fas fa-link"></i></a>
+
+</h4>
+<dl class="phpdocumentor-table-of-contents">
+            <dt class="phpdocumentor-table-of-contents__entry -constant -public">
+    <a class="" href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#constant_UPDATER_VERSION">UPDATER_VERSION</a>
+    <span>
+        &nbsp;: mixed&nbsp;= &#039;1.5.0&#039;                            </span>
+</dt>
+<dd>Version of this updater implementation. Decides the leader election, so it
+must be raised with every change to the family logic.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -constant -private">
+    <a class="" href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#constant_ASSET_PATTERN">ASSET_PATTERN</a>
+    <span>
+        &nbsp;: mixed&nbsp;= &#039;~^(jpkcom-[a-z0-9-]+)\.zip\z~&#039;                            </span>
+</dt>
+<dd>File name of a JPKCom release asset, lower-cased, as the install gate claims it.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -constant -private">
+    <a class="" href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#constant_HOST_FAIL_KEY">HOST_FAIL_KEY</a>
+    <span>
+        &nbsp;: mixed&nbsp;= &#039;jpk_git_update_host_fail&#039;                            </span>
+</dt>
+<dd>Host-wide breaker: one dead or slow github.io must not cost a timeout per plugin.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -constant -private">
+    <a class="" href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#constant_MANIFEST_URL_FORMAT">MANIFEST_URL_FORMAT</a>
+    <span>
+        &nbsp;: mixed&nbsp;= &#039;https://jpkcom.github.io/%1$s/plugin_%1$s.json&#039;                            </span>
+</dt>
+<dd>Manifest location for a plugin whose copy is not loaded.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -constant -private">
+    <a class="" href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#constant_PACKAGE_PATTERN">PACKAGE_PATTERN</a>
+    <span>
+        &nbsp;: mixed&nbsp;= &#039;~^https://github\.com/(?i:JPKCom)/(jpkcom-[a-z...                            </span>
+</dt>
+<dd>Release assets are published as &lt;slug&gt;.zip on the plugin&#039;s own repository.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -constant -private">
+    <a class="" href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#constant_PLUGIN_URI_PATTERN">PLUGIN_URI_PATTERN</a>
+    <span>
+        &nbsp;: mixed&nbsp;= &#039;~^https://github\.com/JPKCom/(jpkcom-[a-z0-9-]...                            </span>
+</dt>
+<dd>A JPKCom plugin is recognised by its Plugin URI, which every released version
+of every JPKCom plugin carries (unlike the Update URI header, added only in
+the 2026-10-19 releases), together with the canonical file &lt;slug&gt;/&lt;slug&gt;.php.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -constant -private">
+    <a class="" href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#constant_READ_FETCH_BUDGET">READ_FETCH_BUDGET</a>
+    <span>
+        &nbsp;: mixed&nbsp;= 5                            </span>
+</dt>
+<dd>Uncached manifest fetches allowed per request while rendering update data.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -constant -private">
+    <a class="" href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#constant_REGISTRY">REGISTRY</a>
+    <span>
+        &nbsp;: mixed&nbsp;= &#039;jpkcom_git_updater_registry&#039;                            </span>
+</dt>
+<dd>Global registry shared by all copies (each copy lives in its own namespace,
+so class statics are not shared). Entries are plain arrays with the scalar
+keys v, id, file, slug, manifest, version. Later versions may add keys but
+must never rename or retype these.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -constant -private">
+    <a class="" href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#constant_SLOW_FETCH_SECONDS">SLOW_FETCH_SECONDS</a>
+    <span>
+        &nbsp;: mixed&nbsp;= 3.0                            </span>
+</dt>
+<dd>A successful fetch slower than this (seconds) also trips the host breaker.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -constant -private">
+    <a class="" href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#constant_SLUG_PATTERN">SLUG_PATTERN</a>
+    <span>
+        &nbsp;: mixed&nbsp;= &#039;~^jpkcom-[a-z0-9-]+\z~&#039;                            </span>
+</dt>
+<dd>Slug of a JPKCom plugin, as used for folder and main file.</dd>
+
+    </dl>
 
 
 <h4 id="toc-properties">
@@ -155,12 +246,6 @@
 
 </h4>
 <dl class="phpdocumentor-table-of-contents">
-            <dt class="phpdocumentor-table-of-contents__entry -property -private">
-    <a class="" href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#property_cache_enabled">$cache_enabled</a>
-    <span>
-                        &nbsp;: bool            </span>
-</dt>
-
             <dt class="phpdocumentor-table-of-contents__entry -property -private">
     <a class="" href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#property_cache_key">$cache_key</a>
     <span>
@@ -174,7 +259,37 @@
 </dt>
 
             <dt class="phpdocumentor-table-of-contents__entry -property -private">
+    <a class="" href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#property_discovered">$discovered</a>
+    <span>
+                        &nbsp;: array&lt;string, array{slug: string, file: string, version: string, manifest: string, frozen: bool}&gt;|null            </span>
+</dt>
+
+            <dt class="phpdocumentor-table-of-contents__entry -property -private">
+    <a class="" href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#property_leader_for_size">$leader_for_size</a>
+    <span>
+                        &nbsp;: int            </span>
+</dt>
+
+            <dt class="phpdocumentor-table-of-contents__entry -property -private">
+    <a class="" href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#property_leader_id">$leader_id</a>
+    <span>
+                        &nbsp;: int|null            </span>
+</dt>
+
+            <dt class="phpdocumentor-table-of-contents__entry -property -private">
     <a class="" href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#property_manifest_url">$manifest_url</a>
+    <span>
+                        &nbsp;: string            </span>
+</dt>
+
+            <dt class="phpdocumentor-table-of-contents__entry -property -private">
+    <a class="" href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#property_members">$members</a>
+    <span>
+                        &nbsp;: array&lt;string, array{slug: string, file: string, version: string, manifest: string, frozen: bool}&gt;|null            </span>
+</dt>
+
+            <dt class="phpdocumentor-table-of-contents__entry -property -private">
+    <a class="" href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#property_members_signature">$members_signature</a>
     <span>
                         &nbsp;: string            </span>
 </dt>
@@ -189,6 +304,18 @@
     <a class="" href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#property_plugin_slug">$plugin_slug</a>
     <span>
                         &nbsp;: string            </span>
+</dt>
+
+            <dt class="phpdocumentor-table-of-contents__entry -property -private">
+    <a class="" href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#property_read_fetches">$read_fetches</a>
+    <span>
+                        &nbsp;: int            </span>
+</dt>
+
+            <dt class="phpdocumentor-table-of-contents__entry -property -private">
+    <a class="" href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#property_validated_urls">$validated_urls</a>
+    <span>
+                        &nbsp;: array&lt;string, bool&gt;            </span>
 </dt>
 
     </dl>
@@ -209,16 +336,23 @@
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a class="" href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_check_update">check_update()</a>
     <span>
-                                &nbsp;: object    </span>
+                                &nbsp;: mixed    </span>
 </dt>
-<dd>Check for available plugin updates.</dd>
+<dd>Inject update information for every family member.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a class="" href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_clear_cache">clear_cache()</a>
     <span>
                                 &nbsp;: void    </span>
 </dt>
-<dd>Clear cached manifest after a successful update.</dd>
+<dd>Clear cached manifests after an update.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -public">
+    <a class="" href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_forget_members">forget_members()</a>
+    <span>
+                                &nbsp;: void    </span>
+</dt>
+<dd>Drop the plugin scan and member cache after a plugin was deleted or updated.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a class="" href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_plugin_info">plugin_info()</a>
@@ -228,18 +362,152 @@
 <dd>Provide detailed plugin info in the “View Details” modal.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
+    <a class="" href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_strip_packages">strip_packages()</a>
+    <span>
+                                &nbsp;: mixed    </span>
+</dt>
+<dd>Remove JPKCom package URLs before the update transient is stored.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a class="" href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_verify_download_checksum">verify_download_checksum()</a>
     <span>
-                                &nbsp;: bool|string|<abbr title="\WP_Error">WP_Error</abbr>    </span>
+                                &nbsp;: mixed    </span>
 </dt>
 <dd>Verify download checksum before installation.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -private">
+    <a class="" href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_cache_key_for">cache_key_for()</a>
+    <span>
+                                &nbsp;: string    </span>
+</dt>
+<dd>Manifest cache key, shared with every copy back to 1.4.0.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -private">
+    <a class="" href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_checksum_error">checksum_error()</a>
+    <span>
+                                &nbsp;: <abbr title="\WP_Error">WP_Error</abbr>    </span>
+</dt>
+<dd>Checksum mismatch error.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -private">
+    <a class="" href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_discovered">discovered()</a>
+    <span>
+                                &nbsp;: array&lt;string, array{slug: string, folder: string, file: string, version: string, manifest: string, frozen: bool}&gt;    </span>
+</dt>
+<dd>Every installed plugin in the canonical &lt;slug&gt;/&lt;slug&gt;.php layout whose
+Plugin URI is its JPKCom repository, keyed by plugin file.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -private">
+    <a class="" href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_elect">elect()</a>
+    <span>
+                                &nbsp;: int|null    </span>
+</dt>
+<dd>Elect the leader among the registered copies.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -private">
+    <a class="" href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_entry">entry()</a>
+    <span>
+                                &nbsp;: object    </span>
+</dt>
+<dd>Build one update entry.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -private">
     <a class="" href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_get_remote_manifest">get_remote_manifest()</a>
     <span>
                                 &nbsp;: object|null    </span>
 </dt>
-<dd>Fetch and decode the remote manifest file.</dd>
+<dd>Fetch and decode a remote manifest file.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -private">
+    <a class="" href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_icons">icons()</a>
+    <span>
+                                &nbsp;: array&lt;string, string&gt;    </span>
+</dt>
+<dd>Icon URLs from the manifest as an array (core indexes it with []).</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -private">
+    <a class="" href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_is_background">is_background()</a>
+    <span>
+                                &nbsp;: bool    </span>
+</dt>
+<dd>Whether this request is cron or WP-CLI, where latency does not matter.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -private">
+    <a class="" href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_is_leader">is_leader()</a>
+    <span>
+                                &nbsp;: bool    </span>
+</dt>
+<dd>Whether this copy is the elected leader.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -private">
+    <a class="" href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_is_plugin_loaded">is_plugin_loaded()</a>
+    <span>
+                                &nbsp;: bool    </span>
+</dt>
+<dd>Whether a plugin&#039;s main file was actually included in this request.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -private">
+    <a class="" href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_is_registered_file">is_registered_file()</a>
+    <span>
+                                &nbsp;: bool    </span>
+</dt>
+<dd>Whether a plugin file belongs to a registered (1.5+) copy.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -private">
+    <a class="" href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_is_vcs_checkout">is_vcs_checkout()</a>
+    <span>
+                                &nbsp;: bool    </span>
+</dt>
+<dd>Whether a plugin directory is a version-control checkout.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -private">
+    <a class="" href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_log">log()</a>
+    <span>
+                                &nbsp;: void    </span>
+</dt>
+<dd>Write a log line in WP_DEBUG mode.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -private">
+    <a class="" href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_may_fetch_on_read">may_fetch_on_read()</a>
+    <span>
+                                &nbsp;: bool    </span>
+</dt>
+<dd>Whether rendering update data may fetch an uncached manifest.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -private">
+    <a class="" href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_member_by_folder">member_by_folder()</a>
+    <span>
+                                &nbsp;: array{slug: string, folder: string, file: string, version: string, manifest: string, frozen: bool}|null    </span>
+</dt>
+<dd>Find a member by its folder name (the slug WordPress uses for it).</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -private">
+    <a class="" href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_members">members()</a>
+    <span>
+                                &nbsp;: array&lt;string, array{slug: string, folder: string, file: string, version: string, manifest: string, frozen: bool}&gt;    </span>
+</dt>
+<dd>The JPKCom plugins this leader serves, keyed by plugin file.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -private">
+    <a class="" href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_package_url">package_url()</a>
+    <span>
+                                &nbsp;: string    </span>
+</dt>
+<dd>The manifest&#039;s download URL, if it is a release asset of this very plugin.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -private">
+    <a class="" href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_register">register()</a>
+    <span>
+                                &nbsp;: void    </span>
+</dt>
+<dd>Add this copy to the shared registry.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -private">
+    <a class="" href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_registry">registry()</a>
+    <span>
+                                &nbsp;: array&lt;int, array{v: string, id: int, file: string, slug: string, manifest: string, version: string}&gt;    </span>
+</dt>
+<dd>Valid registry entries, in registration order.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -private">
     <a class="" href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_remember_failure">remember_failure()</a>
@@ -248,11 +516,360 @@
 </dt>
 <dd>Back off after a failed manifest fetch.</dd>
 
+            <dt class="phpdocumentor-table-of-contents__entry -method -private">
+    <a class="" href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_runs_old_copy">runs_old_copy()</a>
+    <span>
+                                &nbsp;: bool    </span>
+</dt>
+<dd>Whether a JPKCom plugin&#039;s own pre-1.5 updater copy runs in this request.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -private">
+    <a class="" href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_text">text()</a>
+    <span>
+                                &nbsp;: string    </span>
+</dt>
+<dd>A manifest value as plain text, or the fallback when it is not a scalar.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -private">
+    <a class="" href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_url">url()</a>
+    <span>
+                                &nbsp;: string    </span>
+</dt>
+<dd>A manifest value as a sanitised URL, or the fallback.</dd>
+
     </dl>
 
 
 
         
+    <section class="phpdocumentor-constants">
+        <h3 class="phpdocumentor-elements__header" id="constants">
+            Constants
+            <a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#constants" class="headerlink"><i class="fas fa-link"></i></a>
+
+        </h3>
+                    <article class="phpdocumentor-element -constant -public ">
+    <h4 class="phpdocumentor-element__name" id="constant_UPDATER_VERSION">
+        UPDATER_VERSION
+        <a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#constant_UPDATER_VERSION" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h4>
+
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-plugin-updater.php"><a href="files/includes-class-plugin-updater.html"><abbr title="includes/class-plugin-updater.php">class-plugin-updater.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">74</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Version of this updater implementation. Decides the leader election, so it
+must be raised with every change to the family logic.</p>
+
+    
+    <code class="phpdocumentor-signature phpdocumentor-code ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+        <span class="phpdocumentor-signature__type">mixed</span>
+    <span class="phpdocumentor-signature__name">UPDATER_VERSION</span>
+    = <span class="phpdocumentor-signature__default-value">&#039;1.5.0&#039;</span>
+</code>
+
+
+    
+    
+    
+
+        
+    </article>
+                    <article class="phpdocumentor-element -constant -private ">
+    <h4 class="phpdocumentor-element__name" id="constant_ASSET_PATTERN">
+        ASSET_PATTERN
+        <a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#constant_ASSET_PATTERN" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h4>
+
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-plugin-updater.php"><a href="files/includes-class-plugin-updater.html"><abbr title="includes/class-plugin-updater.php">class-plugin-updater.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">100</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">File name of a JPKCom release asset, lower-cased, as the install gate claims it.</p>
+
+    
+    <code class="phpdocumentor-signature phpdocumentor-code ">
+    <span class="phpdocumentor-signature__visibility">private</span>
+        <span class="phpdocumentor-signature__type">mixed</span>
+    <span class="phpdocumentor-signature__name">ASSET_PATTERN</span>
+    = <span class="phpdocumentor-signature__default-value">&#039;~^(jpkcom-[a-z0-9-]+)\.zip\z~&#039;</span>
+</code>
+
+
+    
+    
+    
+
+        
+    </article>
+                    <article class="phpdocumentor-element -constant -private ">
+    <h4 class="phpdocumentor-element__name" id="constant_HOST_FAIL_KEY">
+        HOST_FAIL_KEY
+        <a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#constant_HOST_FAIL_KEY" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h4>
+
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-plugin-updater.php"><a href="files/includes-class-plugin-updater.html"><abbr title="includes/class-plugin-updater.php">class-plugin-updater.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">109</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Host-wide breaker: one dead or slow github.io must not cost a timeout per plugin.</p>
+
+    
+    <code class="phpdocumentor-signature phpdocumentor-code ">
+    <span class="phpdocumentor-signature__visibility">private</span>
+        <span class="phpdocumentor-signature__type">mixed</span>
+    <span class="phpdocumentor-signature__name">HOST_FAIL_KEY</span>
+    = <span class="phpdocumentor-signature__default-value">&#039;jpk_git_update_host_fail&#039;</span>
+</code>
+
+
+    
+    
+    
+
+        
+    </article>
+                    <article class="phpdocumentor-element -constant -private ">
+    <h4 class="phpdocumentor-element__name" id="constant_MANIFEST_URL_FORMAT">
+        MANIFEST_URL_FORMAT
+        <a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#constant_MANIFEST_URL_FORMAT" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h4>
+
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-plugin-updater.php"><a href="files/includes-class-plugin-updater.html"><abbr title="includes/class-plugin-updater.php">class-plugin-updater.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">106</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Manifest location for a plugin whose copy is not loaded.</p>
+
+    
+    <code class="phpdocumentor-signature phpdocumentor-code ">
+    <span class="phpdocumentor-signature__visibility">private</span>
+        <span class="phpdocumentor-signature__type">mixed</span>
+    <span class="phpdocumentor-signature__name">MANIFEST_URL_FORMAT</span>
+    = <span class="phpdocumentor-signature__default-value">&#039;https://jpkcom.github.io/%1$s/plugin_%1$s.json&#039;</span>
+</code>
+
+
+    
+    
+    
+
+        
+    </article>
+                    <article class="phpdocumentor-element -constant -private ">
+    <h4 class="phpdocumentor-element__name" id="constant_PACKAGE_PATTERN">
+        PACKAGE_PATTERN
+        <a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#constant_PACKAGE_PATTERN" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h4>
+
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-plugin-updater.php"><a href="files/includes-class-plugin-updater.html"><abbr title="includes/class-plugin-updater.php">class-plugin-updater.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">97</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Release assets are published as &lt;slug&gt;.zip on the plugin&#039;s own repository.</p>
+
+    
+    <code class="phpdocumentor-signature phpdocumentor-code ">
+    <span class="phpdocumentor-signature__visibility">private</span>
+        <span class="phpdocumentor-signature__type">mixed</span>
+    <span class="phpdocumentor-signature__name">PACKAGE_PATTERN</span>
+    = <span class="phpdocumentor-signature__default-value">&#039;~^https://github\.com/(?i:JPKCom)/(jpkcom-[a-z0-9-]+)/releases/download/[^/?#]+/\1\.zip\z~&#039;</span>
+</code>
+
+
+        <section class="phpdocumentor-description"><p>The organisation is matched case-insensitively because GitHub resolves it
+that way: a hand-typed lowercase URL must not slip past the checksum gate.</p>
+</section>
+
+    
+    
+
+        
+    </article>
+                    <article class="phpdocumentor-element -constant -private ">
+    <h4 class="phpdocumentor-element__name" id="constant_PLUGIN_URI_PATTERN">
+        PLUGIN_URI_PATTERN
+        <a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#constant_PLUGIN_URI_PATTERN" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h4>
+
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-plugin-updater.php"><a href="files/includes-class-plugin-updater.html"><abbr title="includes/class-plugin-updater.php">class-plugin-updater.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">90</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">A JPKCom plugin is recognised by its Plugin URI, which every released version
+of every JPKCom plugin carries (unlike the Update URI header, added only in
+the 2026-10-19 releases), together with the canonical file &lt;slug&gt;/&lt;slug&gt;.php.</p>
+
+    
+    <code class="phpdocumentor-signature phpdocumentor-code ">
+    <span class="phpdocumentor-signature__visibility">private</span>
+        <span class="phpdocumentor-signature__type">mixed</span>
+    <span class="phpdocumentor-signature__name">PLUGIN_URI_PATTERN</span>
+    = <span class="phpdocumentor-signature__default-value">&#039;~^https://github\.com/JPKCom/(jpkcom-[a-z0-9-]+)/?\z~&#039;</span>
+</code>
+
+
+        <section class="phpdocumentor-description"><p>The <code class="prettyprint">~</code> delimiter matters: none of these patterns may contain it.</p>
+</section>
+
+    
+    
+
+        
+    </article>
+                    <article class="phpdocumentor-element -constant -private ">
+    <h4 class="phpdocumentor-element__name" id="constant_READ_FETCH_BUDGET">
+        READ_FETCH_BUDGET
+        <a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#constant_READ_FETCH_BUDGET" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h4>
+
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-plugin-updater.php"><a href="files/includes-class-plugin-updater.html"><abbr title="includes/class-plugin-updater.php">class-plugin-updater.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">112</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Uncached manifest fetches allowed per request while rendering update data.</p>
+
+    
+    <code class="phpdocumentor-signature phpdocumentor-code ">
+    <span class="phpdocumentor-signature__visibility">private</span>
+        <span class="phpdocumentor-signature__type">mixed</span>
+    <span class="phpdocumentor-signature__name">READ_FETCH_BUDGET</span>
+    = <span class="phpdocumentor-signature__default-value">5</span>
+</code>
+
+
+    
+    
+    
+
+        
+    </article>
+                    <article class="phpdocumentor-element -constant -private ">
+    <h4 class="phpdocumentor-element__name" id="constant_REGISTRY">
+        REGISTRY
+        <a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#constant_REGISTRY" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h4>
+
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-plugin-updater.php"><a href="files/includes-class-plugin-updater.html"><abbr title="includes/class-plugin-updater.php">class-plugin-updater.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">82</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Global registry shared by all copies (each copy lives in its own namespace,
+so class statics are not shared). Entries are plain arrays with the scalar
+keys v, id, file, slug, manifest, version. Later versions may add keys but
+must never rename or retype these.</p>
+
+    
+    <code class="phpdocumentor-signature phpdocumentor-code ">
+    <span class="phpdocumentor-signature__visibility">private</span>
+        <span class="phpdocumentor-signature__type">mixed</span>
+    <span class="phpdocumentor-signature__name">REGISTRY</span>
+    = <span class="phpdocumentor-signature__default-value">&#039;jpkcom_git_updater_registry&#039;</span>
+</code>
+
+
+    
+    
+    
+
+        
+    </article>
+                    <article class="phpdocumentor-element -constant -private ">
+    <h4 class="phpdocumentor-element__name" id="constant_SLOW_FETCH_SECONDS">
+        SLOW_FETCH_SECONDS
+        <a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#constant_SLOW_FETCH_SECONDS" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h4>
+
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-plugin-updater.php"><a href="files/includes-class-plugin-updater.html"><abbr title="includes/class-plugin-updater.php">class-plugin-updater.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">115</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">A successful fetch slower than this (seconds) also trips the host breaker.</p>
+
+    
+    <code class="phpdocumentor-signature phpdocumentor-code ">
+    <span class="phpdocumentor-signature__visibility">private</span>
+        <span class="phpdocumentor-signature__type">mixed</span>
+    <span class="phpdocumentor-signature__name">SLOW_FETCH_SECONDS</span>
+    = <span class="phpdocumentor-signature__default-value">3.0</span>
+</code>
+
+
+    
+    
+    
+
+        
+    </article>
+                    <article class="phpdocumentor-element -constant -private ">
+    <h4 class="phpdocumentor-element__name" id="constant_SLUG_PATTERN">
+        SLUG_PATTERN
+        <a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#constant_SLUG_PATTERN" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h4>
+
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-plugin-updater.php"><a href="files/includes-class-plugin-updater.html"><abbr title="includes/class-plugin-updater.php">class-plugin-updater.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">103</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Slug of a JPKCom plugin, as used for folder and main file.</p>
+
+    
+    <code class="phpdocumentor-signature phpdocumentor-code ">
+    <span class="phpdocumentor-signature__visibility">private</span>
+        <span class="phpdocumentor-signature__type">mixed</span>
+    <span class="phpdocumentor-signature__name">SLUG_PATTERN</span>
+    = <span class="phpdocumentor-signature__default-value">&#039;~^jpkcom-[a-z0-9-]+\z~&#039;</span>
+</code>
+
+
+    
+    
+    
+
+        
+    </article>
+            </section>
 
         
     <section class="phpdocumentor-properties">
@@ -261,45 +878,6 @@
             <a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#properties" class="headerlink"><i class="fas fa-link"></i></a>
 
         </h3>
-                    <article
-        class="
-            phpdocumentor-element
-            -property
-            -private
-                                                                    "
->
-    <h4 class="phpdocumentor-element__name" id="property_cache_enabled">
-        $cache_enabled
-        <a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#property_cache_enabled" class="headerlink"><i class="fas fa-link"></i></a>
-
-        <span class="phpdocumentor-element__modifiers">
-                                            </span>
-    </h4>
-    <aside class="phpdocumentor-element-found-in">
-    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-plugin-updater.php"><a href="files/includes-class-plugin-updater.html"><abbr title="includes/class-plugin-updater.php">class-plugin-updater.php</abbr></a></abbr>
-    :
-    <span class="phpdocumentor-element-found-in__line">69</span>
-
-    </aside>
-
-    
-    
-    <code class="phpdocumentor-code phpdocumentor-signature ">
-        <span class="phpdocumentor-signature__visibility">private</span>
-            <span class="phpdocumentor-signature__type">bool</span>
-    <span class="phpdocumentor-signature__name">$cache_enabled</span>
-     = <span class="phpdocumentor-signature__default-value">true</span></code>
-
-    
-        <section class="phpdocumentor-description"><p>Whether caching is enabled</p>
-</section>
-
-    
-
-        
-        
-
-</article>
                     <article
         class="
             phpdocumentor-element
@@ -317,7 +895,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="includes/class-plugin-updater.php"><a href="files/includes-class-plugin-updater.html"><abbr title="includes/class-plugin-updater.php">class-plugin-updater.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">66</span>
+    <span class="phpdocumentor-element-found-in__line">130</span>
 
     </aside>
 
@@ -356,7 +934,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="includes/class-plugin-updater.php"><a href="files/includes-class-plugin-updater.html"><abbr title="includes/class-plugin-updater.php">class-plugin-updater.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">60</span>
+    <span class="phpdocumentor-element-found-in__line">124</span>
 
     </aside>
 
@@ -385,6 +963,123 @@
             -private
                                                                     "
 >
+    <h4 class="phpdocumentor-element__name" id="property_discovered">
+        $discovered
+        <a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#property_discovered" class="headerlink"><i class="fas fa-link"></i></a>
+
+        <span class="phpdocumentor-element__modifiers">
+                                            </span>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-plugin-updater.php"><a href="files/includes-class-plugin-updater.html"><abbr title="includes/class-plugin-updater.php">class-plugin-updater.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">133</span>
+
+    </aside>
+
+    
+    
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+        <span class="phpdocumentor-signature__visibility">private</span>
+            <span class="phpdocumentor-signature__type">array&lt;string, array{slug: string, file: string, version: string, manifest: string, frozen: bool}&gt;|null</span>
+    <span class="phpdocumentor-signature__name">$discovered</span>
+     = <span class="phpdocumentor-signature__default-value">null</span></code>
+
+    
+        <section class="phpdocumentor-description"><p>Per-request scan of installed JPKCom plugins</p>
+</section>
+
+    
+
+        
+        
+
+</article>
+                    <article
+        class="
+            phpdocumentor-element
+            -property
+            -private
+                                                                    "
+>
+    <h4 class="phpdocumentor-element__name" id="property_leader_for_size">
+        $leader_for_size
+        <a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#property_leader_for_size" class="headerlink"><i class="fas fa-link"></i></a>
+
+        <span class="phpdocumentor-element__modifiers">
+                                            </span>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-plugin-updater.php"><a href="files/includes-class-plugin-updater.html"><abbr title="includes/class-plugin-updater.php">class-plugin-updater.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">142</span>
+
+    </aside>
+
+    
+    
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+        <span class="phpdocumentor-signature__visibility">private</span>
+            <span class="phpdocumentor-signature__type">int</span>
+    <span class="phpdocumentor-signature__name">$leader_for_size</span>
+     = <span class="phpdocumentor-signature__default-value">-1</span></code>
+
+    
+        <section class="phpdocumentor-description"><p>Registry size the cached election result belongs to</p>
+</section>
+
+    
+
+        
+        
+
+</article>
+                    <article
+        class="
+            phpdocumentor-element
+            -property
+            -private
+                                                                    "
+>
+    <h4 class="phpdocumentor-element__name" id="property_leader_id">
+        $leader_id
+        <a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#property_leader_id" class="headerlink"><i class="fas fa-link"></i></a>
+
+        <span class="phpdocumentor-element__modifiers">
+                                            </span>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-plugin-updater.php"><a href="files/includes-class-plugin-updater.html"><abbr title="includes/class-plugin-updater.php">class-plugin-updater.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">145</span>
+
+    </aside>
+
+    
+    
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+        <span class="phpdocumentor-signature__visibility">private</span>
+            <span class="phpdocumentor-signature__type">int|null</span>
+    <span class="phpdocumentor-signature__name">$leader_id</span>
+     = <span class="phpdocumentor-signature__default-value">null</span></code>
+
+    
+        <section class="phpdocumentor-description"><p>Object id of the elected leader</p>
+</section>
+
+    
+
+        
+        
+
+</article>
+                    <article
+        class="
+            phpdocumentor-element
+            -property
+            -private
+                                                                    "
+>
     <h4 class="phpdocumentor-element__name" id="property_manifest_url">
         $manifest_url
         <a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#property_manifest_url" class="headerlink"><i class="fas fa-link"></i></a>
@@ -395,7 +1090,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="includes/class-plugin-updater.php"><a href="files/includes-class-plugin-updater.html"><abbr title="includes/class-plugin-updater.php">class-plugin-updater.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">63</span>
+    <span class="phpdocumentor-element-found-in__line">127</span>
 
     </aside>
 
@@ -424,6 +1119,84 @@
             -private
                                                                     "
 >
+    <h4 class="phpdocumentor-element__name" id="property_members">
+        $members
+        <a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#property_members" class="headerlink"><i class="fas fa-link"></i></a>
+
+        <span class="phpdocumentor-element__modifiers">
+                                            </span>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-plugin-updater.php"><a href="files/includes-class-plugin-updater.html"><abbr title="includes/class-plugin-updater.php">class-plugin-updater.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">136</span>
+
+    </aside>
+
+    
+    
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+        <span class="phpdocumentor-signature__visibility">private</span>
+            <span class="phpdocumentor-signature__type">array&lt;string, array{slug: string, file: string, version: string, manifest: string, frozen: bool}&gt;|null</span>
+    <span class="phpdocumentor-signature__name">$members</span>
+     = <span class="phpdocumentor-signature__default-value">null</span></code>
+
+    
+        <section class="phpdocumentor-description"><p>Per-request family member cache</p>
+</section>
+
+    
+
+        
+        
+
+</article>
+                    <article
+        class="
+            phpdocumentor-element
+            -property
+            -private
+                                                                    "
+>
+    <h4 class="phpdocumentor-element__name" id="property_members_signature">
+        $members_signature
+        <a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#property_members_signature" class="headerlink"><i class="fas fa-link"></i></a>
+
+        <span class="phpdocumentor-element__modifiers">
+                                            </span>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-plugin-updater.php"><a href="files/includes-class-plugin-updater.html"><abbr title="includes/class-plugin-updater.php">class-plugin-updater.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">139</span>
+
+    </aside>
+
+    
+    
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+        <span class="phpdocumentor-signature__visibility">private</span>
+            <span class="phpdocumentor-signature__type">string</span>
+    <span class="phpdocumentor-signature__name">$members_signature</span>
+     = <span class="phpdocumentor-signature__default-value">&#039;&#039;</span></code>
+
+    
+        <section class="phpdocumentor-description"><p>Registry signature the member cache was built for</p>
+</section>
+
+    
+
+        
+        
+
+</article>
+                    <article
+        class="
+            phpdocumentor-element
+            -property
+            -private
+                                                                    "
+>
     <h4 class="phpdocumentor-element__name" id="property_plugin_file">
         $plugin_file
         <a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#property_plugin_file" class="headerlink"><i class="fas fa-link"></i></a>
@@ -434,7 +1207,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="includes/class-plugin-updater.php"><a href="files/includes-class-plugin-updater.html"><abbr title="includes/class-plugin-updater.php">class-plugin-updater.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">57</span>
+    <span class="phpdocumentor-element-found-in__line">121</span>
 
     </aside>
 
@@ -473,7 +1246,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="includes/class-plugin-updater.php"><a href="files/includes-class-plugin-updater.html"><abbr title="includes/class-plugin-updater.php">class-plugin-updater.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">54</span>
+    <span class="phpdocumentor-element-found-in__line">118</span>
 
     </aside>
 
@@ -487,6 +1260,84 @@
 
     
         <section class="phpdocumentor-description"><p>Plugin slug (directory name)</p>
+</section>
+
+    
+
+        
+        
+
+</article>
+                    <article
+        class="
+            phpdocumentor-element
+            -property
+            -private
+                                                                    "
+>
+    <h4 class="phpdocumentor-element__name" id="property_read_fetches">
+        $read_fetches
+        <a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#property_read_fetches" class="headerlink"><i class="fas fa-link"></i></a>
+
+        <span class="phpdocumentor-element__modifiers">
+                                            </span>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-plugin-updater.php"><a href="files/includes-class-plugin-updater.html"><abbr title="includes/class-plugin-updater.php">class-plugin-updater.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">148</span>
+
+    </aside>
+
+    
+    
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+        <span class="phpdocumentor-signature__visibility">private</span>
+            <span class="phpdocumentor-signature__type">int</span>
+    <span class="phpdocumentor-signature__name">$read_fetches</span>
+     = <span class="phpdocumentor-signature__default-value">0</span></code>
+
+    
+        <section class="phpdocumentor-description"><p>Uncached manifest fetches made by the read filter in this request</p>
+</section>
+
+    
+
+        
+        
+
+</article>
+                    <article
+        class="
+            phpdocumentor-element
+            -property
+            -private
+                                                                    "
+>
+    <h4 class="phpdocumentor-element__name" id="property_validated_urls">
+        $validated_urls
+        <a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#property_validated_urls" class="headerlink"><i class="fas fa-link"></i></a>
+
+        <span class="phpdocumentor-element__modifiers">
+                                            </span>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-plugin-updater.php"><a href="files/includes-class-plugin-updater.html"><abbr title="includes/class-plugin-updater.php">class-plugin-updater.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">151</span>
+
+    </aside>
+
+    
+    
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+        <span class="phpdocumentor-signature__visibility">private</span>
+            <span class="phpdocumentor-signature__type">array&lt;string, bool&gt;</span>
+    <span class="phpdocumentor-signature__name">$validated_urls</span>
+     = <span class="phpdocumentor-signature__default-value">[]</span></code>
+
+    
+        <section class="phpdocumentor-description"><p>Per-request memo of wp_http_validate_url() results</p>
 </section>
 
     
@@ -517,7 +1368,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="includes/class-plugin-updater.php"><a href="files/includes-class-plugin-updater.html"><abbr title="includes/class-plugin-updater.php">class-plugin-updater.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">78</span>
+    <span class="phpdocumentor-element-found-in__line">160</span>
 
     </aside>
 
@@ -582,25 +1433,30 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="includes/class-plugin-updater.php"><a href="files/includes-class-plugin-updater.html"><abbr title="includes/class-plugin-updater.php">class-plugin-updater.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">339</span>
+    <span class="phpdocumentor-element-found-in__line">851</span>
 
     </aside>
 
-        <p class="phpdocumentor-summary">Check for available plugin updates.</p>
+        <p class="phpdocumentor-summary">Inject update information for every family member.</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                    <span class="phpdocumentor-signature__name">check_update</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__type">object&nbsp;</span><span class="phpdocumentor-signature__argument__name">$transient</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">object</span></code>
+                    <span class="phpdocumentor-signature__name">check_update</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__type">mixed&nbsp;</span><span class="phpdocumentor-signature__argument__name">$transient</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
 
     <div class="phpdocumentor-label-line">
         </div>
     
-    
+        <section class="phpdocumentor-description"><p>Runs on every read of the update_plugins site transient. Entries are built
+fresh on each read (so the package that strip_packages() removed before
+storage is back for the upgrader) and never carry <code class="prettyprint">autoupdate</code> (core would
+treat it as a forced auto-update) or <code class="prettyprint">translations</code> (installed unverified).</p>
+</section>
+
         <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
     <dl class="phpdocumentor-argument-list">
                     <dt class="phpdocumentor-argument-list__entry">
                 <span class="phpdocumentor-argument-list__argument__name">$transient</span>
-                : <span class="phpdocumentor-argument-list__argument__type">object</span>
+                : <span class="phpdocumentor-argument-list__argument__type">mixed</span>
                             </dt>
             <dd class="phpdocumentor-argument-list__definition">
                     <section class="phpdocumentor-description"><p>WordPress transient data.</p>
@@ -613,11 +1469,7 @@
 
         
     
-            <section>
-        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
-        <span class="phpdocumentor-signature__response_type">object</span>
-            </section>
-
+    
 </article>
                     <article
         class="phpdocumentor-element
@@ -633,25 +1485,28 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="includes/class-plugin-updater.php"><a href="files/includes-class-plugin-updater.html"><abbr title="includes/class-plugin-updater.php">class-plugin-updater.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">415</span>
+    <span class="phpdocumentor-element-found-in__line">990</span>
 
     </aside>
 
-        <p class="phpdocumentor-summary">Clear cached manifest after a successful update.</p>
+        <p class="phpdocumentor-summary">Clear cached manifests after an update.</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                    <span class="phpdocumentor-signature__name">clear_cache</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__type"><abbr title="\WP_Upgrader">WP_Upgrader</abbr>&nbsp;</span><span class="phpdocumentor-signature__argument__name">$upgrader</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__type">array&lt;string|int, mixed&gt;&nbsp;</span><span class="phpdocumentor-signature__argument__name">$options</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">void</span></code>
+                    <span class="phpdocumentor-signature__name">clear_cache</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__type">mixed&nbsp;</span><span class="phpdocumentor-signature__argument__name">$upgrader</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__type">mixed&nbsp;</span><span class="phpdocumentor-signature__argument__name">$options</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">void</span></code>
 
     <div class="phpdocumentor-label-line">
         </div>
     
-    
+        <section class="phpdocumentor-description"><p>Single updates pass <code class="prettyprint">plugin</code>, bulk updates (AJAX, update-core, WP-CLI) pass
+<code class="prettyprint">plugins</code>.</p>
+</section>
+
         <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
     <dl class="phpdocumentor-argument-list">
                     <dt class="phpdocumentor-argument-list__entry">
                 <span class="phpdocumentor-argument-list__argument__name">$upgrader</span>
-                : <span class="phpdocumentor-argument-list__argument__type"><abbr title="\WP_Upgrader">WP_Upgrader</abbr></span>
+                : <span class="phpdocumentor-argument-list__argument__type">mixed</span>
                             </dt>
             <dd class="phpdocumentor-argument-list__definition">
                     <section class="phpdocumentor-description"><p>WordPress upgrader instance.</p>
@@ -660,7 +1515,7 @@
             </dd>
                     <dt class="phpdocumentor-argument-list__entry">
                 <span class="phpdocumentor-argument-list__argument__name">$options</span>
-                : <span class="phpdocumentor-argument-list__argument__type">array&lt;string|int, mixed&gt;</span>
+                : <span class="phpdocumentor-argument-list__argument__type">mixed</span>
                             </dt>
             <dd class="phpdocumentor-argument-list__definition">
                     <section class="phpdocumentor-description"><p>Upgrade options.</p>
@@ -681,6 +1536,41 @@
             -public
                                                         "
 >
+    <h4 class="phpdocumentor-element__name" id="method_forget_members">
+        forget_members()
+        <a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_forget_members" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-plugin-updater.php"><a href="files/includes-class-plugin-updater.html"><abbr title="includes/class-plugin-updater.php">class-plugin-updater.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">459</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Drop the plugin scan and member cache after a plugin was deleted or updated.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+                    <span class="phpdocumentor-signature__name">forget_members</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">void</span></code>
+
+    <div class="phpdocumentor-label-line">
+        </div>
+    
+    
+    
+    
+
+        
+    
+    
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -public
+                                                        "
+>
     <h4 class="phpdocumentor-element__name" id="method_plugin_info">
         plugin_info()
         <a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_plugin_info" class="headerlink"><i class="fas fa-link"></i></a>
@@ -689,7 +1579,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="includes/class-plugin-updater.php"><a href="files/includes-class-plugin-updater.html"><abbr title="includes/class-plugin-updater.php">class-plugin-updater.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">217</span>
+    <span class="phpdocumentor-element-found-in__line">718</span>
 
     </aside>
 
@@ -697,12 +1587,16 @@
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                    <span class="phpdocumentor-signature__name">plugin_info</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__type">mixed&nbsp;</span><span class="phpdocumentor-signature__argument__name">$result</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$action</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__type">object&nbsp;</span><span class="phpdocumentor-signature__argument__name">$args</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
+                    <span class="phpdocumentor-signature__name">plugin_info</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__type">mixed&nbsp;</span><span class="phpdocumentor-signature__argument__name">$result</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__type">mixed&nbsp;</span><span class="phpdocumentor-signature__argument__name">$action</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__type">mixed&nbsp;</span><span class="phpdocumentor-signature__argument__name">$args</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
 
     <div class="phpdocumentor-label-line">
         </div>
     
-    
+        <section class="phpdocumentor-description"><p>Answers for every family member, so the modal of an inactive plugin works
+and never falls through to wordpress.org, where a squatted slug would show
+someone else's plugin.</p>
+</section>
+
         <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
     <dl class="phpdocumentor-argument-list">
                     <dt class="phpdocumentor-argument-list__entry">
@@ -716,7 +1610,7 @@
             </dd>
                     <dt class="phpdocumentor-argument-list__entry">
                 <span class="phpdocumentor-argument-list__argument__name">$action</span>
-                : <span class="phpdocumentor-argument-list__argument__type">string</span>
+                : <span class="phpdocumentor-argument-list__argument__type">mixed</span>
                             </dt>
             <dd class="phpdocumentor-argument-list__definition">
                     <section class="phpdocumentor-description"><p>Current action.</p>
@@ -725,10 +1619,64 @@
             </dd>
                     <dt class="phpdocumentor-argument-list__entry">
                 <span class="phpdocumentor-argument-list__argument__name">$args</span>
-                : <span class="phpdocumentor-argument-list__argument__type">object</span>
+                : <span class="phpdocumentor-argument-list__argument__type">mixed</span>
                             </dt>
             <dd class="phpdocumentor-argument-list__definition">
                     <section class="phpdocumentor-description"><p>API request arguments.</p>
+</section>
+
+            </dd>
+            </dl>
+
+    
+
+        
+    
+    
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -public
+                                                        "
+>
+    <h4 class="phpdocumentor-element__name" id="method_strip_packages">
+        strip_packages()
+        <a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_strip_packages" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-plugin-updater.php"><a href="files/includes-class-plugin-updater.html"><abbr title="includes/class-plugin-updater.php">class-plugin-updater.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">957</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Remove JPKCom package URLs before the update transient is stored.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+                    <span class="phpdocumentor-signature__name">strip_packages</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__type">mixed&nbsp;</span><span class="phpdocumentor-signature__argument__name">$value</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
+
+    <div class="phpdocumentor-label-line">
+        </div>
+    
+        <section class="phpdocumentor-description"><p>The leader re-injects them on every read. A request in which no 1.5+ copy is
+loaded (every JPKCom plugin deactivated, WP-CLI --skip-plugins, a multisite
+main site without JPKCom code) then finds an empty package, which core
+refuses (&quot;Automatic update is unavailable&quot;), instead of a URL it would
+install without any checksum. Best effort: a third party that writes the
+option directly bypasses this filter.</p>
+</section>
+
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-argument-list__argument__name">$value</span>
+                : <span class="phpdocumentor-argument-list__argument__type">mixed</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>Transient value about to be stored.</p>
 </section>
 
             </dd>
@@ -754,7 +1702,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="includes/class-plugin-updater.php"><a href="files/includes-class-plugin-updater.html"><abbr title="includes/class-plugin-updater.php">class-plugin-updater.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">437</span>
+    <span class="phpdocumentor-element-found-in__line">1033</span>
 
     </aside>
 
@@ -762,20 +1710,24 @@
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                    <span class="phpdocumentor-signature__name">verify_download_checksum</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__type">bool&nbsp;</span><span class="phpdocumentor-signature__argument__name">$reply</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$package</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__type"><abbr title="\WP_Upgrader">WP_Upgrader</abbr>&nbsp;</span><span class="phpdocumentor-signature__argument__name">$upgrader</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">bool|string|<abbr title="\WP_Error">WP_Error</abbr></span></code>
+                    <span class="phpdocumentor-signature__name">verify_download_checksum</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__type">mixed&nbsp;</span><span class="phpdocumentor-signature__argument__name">$reply</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__type">mixed&nbsp;</span><span class="phpdocumentor-signature__argument__name">$package</span></span><span class="phpdocumentor-signature__argument"><span>[</span><span>, </span><span class="phpdocumentor-signature__argument__type">mixed&nbsp;</span><span class="phpdocumentor-signature__argument__name">$upgrader</span><span> = </span><span class="phpdocumentor-signature__argument__default-value">null</span><span> ]</span></span><span class="phpdocumentor-signature__argument"><span>[</span><span>, </span><span class="phpdocumentor-signature__argument__type">mixed&nbsp;</span><span class="phpdocumentor-signature__argument__name">$hook_extra</span><span> = </span><span class="phpdocumentor-signature__argument__default-value">[]</span><span> ]</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
 
     <div class="phpdocumentor-label-line">
         </div>
     
-        <section class="phpdocumentor-description"><p>This hook fires before WordPress downloads the plugin package, allowing us to
-verify the SHA256 checksum from the manifest matches the actual download.</p>
+        <section class="phpdocumentor-description"><p>Ownership is decided first: a package belongs to the family when the
+upgrader names a member plugin (<code class="prettyprint">$hook_extra['plugin']</code>, set for every
+update) or when its URL is a JPKCom release asset (installs, which carry no
+plugin name). Anything else passes through untouched. For a family package
+nothing is trusted without a hash match against the manifest, including a
+file an earlier filter already returned.</p>
 </section>
 
         <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
     <dl class="phpdocumentor-argument-list">
                     <dt class="phpdocumentor-argument-list__entry">
                 <span class="phpdocumentor-argument-list__argument__name">$reply</span>
-                : <span class="phpdocumentor-argument-list__argument__type">bool</span>
+                : <span class="phpdocumentor-argument-list__argument__type">mixed</span>
                             </dt>
             <dd class="phpdocumentor-argument-list__definition">
                     <section class="phpdocumentor-description"><p>Whether to bail without returning the package (default false).</p>
@@ -784,7 +1736,7 @@ verify the SHA256 checksum from the manifest matches the actual download.</p>
             </dd>
                     <dt class="phpdocumentor-argument-list__entry">
                 <span class="phpdocumentor-argument-list__argument__name">$package</span>
-                : <span class="phpdocumentor-argument-list__argument__type">string</span>
+                : <span class="phpdocumentor-argument-list__argument__type">mixed</span>
                             </dt>
             <dd class="phpdocumentor-argument-list__definition">
                     <section class="phpdocumentor-description"><p>The package file name or URL.</p>
@@ -793,10 +1745,19 @@ verify the SHA256 checksum from the manifest matches the actual download.</p>
             </dd>
                     <dt class="phpdocumentor-argument-list__entry">
                 <span class="phpdocumentor-argument-list__argument__name">$upgrader</span>
-                : <span class="phpdocumentor-argument-list__argument__type"><abbr title="\WP_Upgrader">WP_Upgrader</abbr></span>
-                            </dt>
+                : <span class="phpdocumentor-argument-list__argument__type">mixed</span>
+                 = <span class="phpdocumentor-argument-list__argument__default-value">null</span>            </dt>
             <dd class="phpdocumentor-argument-list__definition">
                     <section class="phpdocumentor-description"><p>The WP_Upgrader instance.</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-argument-list__argument__name">$hook_extra</span>
+                : <span class="phpdocumentor-argument-list__argument__type">mixed</span>
+                 = <span class="phpdocumentor-argument-list__argument__default-value">[]</span>            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>Extra arguments passed to hooked filters.</p>
 </section>
 
             </dd>
@@ -808,12 +1769,331 @@ verify the SHA256 checksum from the manifest matches the actual download.</p>
     
             <section>
         <h5 class="phpdocumentor-return-value__heading">Return values</h5>
-        <span class="phpdocumentor-signature__response_type">bool|string|<abbr title="\WP_Error">WP_Error</abbr></span>
+        <span class="phpdocumentor-signature__response_type">mixed</span>
                     &mdash;
-                <section class="phpdocumentor-description"><p>Path to the verified package, $reply when the
-package is not ours, WP_Error if verification fails.</p>
+                <section class="phpdocumentor-description"><p>Path to the verified package, $reply when the package is not
+ours, WP_Error if verification fails.</p>
 </section>
 
+            </section>
+
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -private
+                                                        "
+>
+    <h4 class="phpdocumentor-element__name" id="method_cache_key_for">
+        cache_key_for()
+        <a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_cache_key_for" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-plugin-updater.php"><a href="files/includes-class-plugin-updater.html"><abbr title="includes/class-plugin-updater.php">class-plugin-updater.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">514</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Manifest cache key, shared with every copy back to 1.4.0.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">private</span>
+                    <span class="phpdocumentor-signature__name">cache_key_for</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$slug</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string</span></code>
+
+    <div class="phpdocumentor-label-line">
+        </div>
+    
+    
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-argument-list__argument__name">$slug</span>
+                : <span class="phpdocumentor-argument-list__argument__type">string</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>Plugin slug.</p>
+</section>
+
+            </dd>
+            </dl>
+
+    
+
+        
+    
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type">string</span>
+            </section>
+
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -private
+                                                        "
+>
+    <h4 class="phpdocumentor-element__name" id="method_checksum_error">
+        checksum_error()
+        <a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_checksum_error" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-plugin-updater.php"><a href="files/includes-class-plugin-updater.html"><abbr title="includes/class-plugin-updater.php">class-plugin-updater.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">1215</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Checksum mismatch error.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">private</span>
+                    <span class="phpdocumentor-signature__name">checksum_error</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$calculated</span></span><span class="phpdocumentor-signature__argument"><span>[</span><span>, </span><span class="phpdocumentor-signature__argument__type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$expected</span><span> = </span><span class="phpdocumentor-signature__argument__default-value">''</span><span> ]</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><abbr title="\WP_Error">WP_Error</abbr></span></code>
+
+    <div class="phpdocumentor-label-line">
+        </div>
+    
+    
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-argument-list__argument__name">$calculated</span>
+                : <span class="phpdocumentor-argument-list__argument__type">string</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>Calculated hash or a placeholder.</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-argument-list__argument__name">$expected</span>
+                : <span class="phpdocumentor-argument-list__argument__type">string</span>
+                 = <span class="phpdocumentor-argument-list__argument__default-value">''</span>            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>Expected hash.</p>
+</section>
+
+            </dd>
+            </dl>
+
+    
+
+        
+    
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type"><abbr title="\WP_Error">WP_Error</abbr></span>
+            </section>
+
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -private
+                                                        "
+>
+    <h4 class="phpdocumentor-element__name" id="method_discovered">
+        discovered()
+        <a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_discovered" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-plugin-updater.php"><a href="files/includes-class-plugin-updater.html"><abbr title="includes/class-plugin-updater.php">class-plugin-updater.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">317</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Every installed plugin in the canonical &lt;slug&gt;/&lt;slug&gt;.php layout whose
+Plugin URI is its JPKCom repository, keyed by plugin file.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">private</span>
+                    <span class="phpdocumentor-signature__name">discovered</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">array&lt;string, array{slug: string, folder: string, file: string, version: string, manifest: string, frozen: bool}&gt;</span></code>
+
+    <div class="phpdocumentor-label-line">
+        </div>
+    
+        <section class="phpdocumentor-description"><p>Reads the headers of jpkcom-* candidates only, not the whole plugin
+directory, because this runs on every read of the update transient.</p>
+</section>
+
+    
+    
+
+        
+    
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type">array&lt;string, array{slug: string, folder: string, file: string, version: string, manifest: string, frozen: bool}&gt;</span>
+            </section>
+
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -private
+                                                        "
+>
+    <h4 class="phpdocumentor-element__name" id="method_elect">
+        elect()
+        <a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_elect" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-plugin-updater.php"><a href="files/includes-class-plugin-updater.html"><abbr title="includes/class-plugin-updater.php">class-plugin-updater.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">291</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Elect the leader among the registered copies.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">private</span>
+                    <span class="phpdocumentor-signature__name">elect</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__type">array&lt;string|int, mixed&gt;&nbsp;</span><span class="phpdocumentor-signature__argument__name">$entries</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">int|null</span></code>
+
+    <div class="phpdocumentor-label-line">
+        </div>
+    
+        <section class="phpdocumentor-description"><p>Deliberately looser than registry(): any copy inside a jpkcom-* plugin
+with a comparable version takes part, so a future copy that changes its
+manifest location or the shape of its entry still wins over this one
+instead of leaving two leaders.</p>
+</section>
+
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-argument-list__argument__name">$entries</span>
+                : <span class="phpdocumentor-argument-list__argument__type">array&lt;string|int, mixed&gt;</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>Raw registry.</p>
+</section>
+
+            </dd>
+            </dl>
+
+    
+
+        
+    
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type">int|null</span>
+                    &mdash;
+                <section class="phpdocumentor-description"><p>Object id of the leader.</p>
+</section>
+
+            </section>
+
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -private
+                                                        "
+>
+    <h4 class="phpdocumentor-element__name" id="method_entry">
+        entry()
+        <a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_entry" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-plugin-updater.php"><a href="files/includes-class-plugin-updater.html"><abbr title="includes/class-plugin-updater.php">class-plugin-updater.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">930</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Build one update entry.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">private</span>
+                    <span class="phpdocumentor-signature__name">entry</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__type">array{slug: string, folder: string, file: string, version: string, manifest: string, frozen: bool}&nbsp;</span><span class="phpdocumentor-signature__argument__name">$member</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$new_version</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$package</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__type">array&lt;string, string&gt;&nbsp;</span><span class="phpdocumentor-signature__argument__name">$icons</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$tested</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$requires</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$requires_php</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">object</span></code>
+
+    <div class="phpdocumentor-label-line">
+        </div>
+    
+    
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-argument-list__argument__name">$member</span>
+                : <span class="phpdocumentor-argument-list__argument__type">array{slug: string, folder: string, file: string, version: string, manifest: string, frozen: bool}</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>Member.</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-argument-list__argument__name">$new_version</span>
+                : <span class="phpdocumentor-argument-list__argument__type">string</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>Manifest version.</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-argument-list__argument__name">$package</span>
+                : <span class="phpdocumentor-argument-list__argument__type">string</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>Validated package URL or ''.</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-argument-list__argument__name">$icons</span>
+                : <span class="phpdocumentor-argument-list__argument__type">array&lt;string, string&gt;</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>Icons.</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-argument-list__argument__name">$tested</span>
+                : <span class="phpdocumentor-argument-list__argument__type">string</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>Tested up to.</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-argument-list__argument__name">$requires</span>
+                : <span class="phpdocumentor-argument-list__argument__type">string</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>Requires at least.</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-argument-list__argument__name">$requires_php</span>
+                : <span class="phpdocumentor-argument-list__argument__type">string</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>Requires PHP.</p>
+</section>
+
+            </dd>
+            </dl>
+
+    
+
+        
+    
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type">object</span>
             </section>
 
 </article>
@@ -831,15 +2111,15 @@ package is not ours, WP_Error if verification fails.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="includes/class-plugin-updater.php"><a href="files/includes-class-plugin-updater.html"><abbr title="includes/class-plugin-updater.php">class-plugin-updater.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">122</span>
+    <span class="phpdocumentor-element-found-in__line">555</span>
 
     </aside>
 
-        <p class="phpdocumentor-summary">Fetch and decode the remote manifest file.</p>
+        <p class="phpdocumentor-summary">Fetch and decode a remote manifest file.</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">private</span>
-                    <span class="phpdocumentor-signature__name">get_remote_manifest</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">object|null</span></code>
+                    <span class="phpdocumentor-signature__name">get_remote_manifest</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$slug</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$manifest_url</span></span><span class="phpdocumentor-signature__argument"><span>[</span><span>, </span><span class="phpdocumentor-signature__argument__type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$context</span><span> = </span><span class="phpdocumentor-signature__argument__default-value">'action'</span><span> ]</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">object|null</span></code>
 
     <div class="phpdocumentor-label-line">
         </div>
@@ -848,7 +2128,40 @@ package is not ours, WP_Error if verification fails.</p>
 try to fetch the manifest simultaneously.</p>
 </section>
 
-    
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-argument-list__argument__name">$slug</span>
+                : <span class="phpdocumentor-argument-list__argument__type">string</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>Plugin slug.</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-argument-list__argument__name">$manifest_url</span>
+                : <span class="phpdocumentor-argument-list__argument__type">string</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>Manifest URL.</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-argument-list__argument__name">$context</span>
+                : <span class="phpdocumentor-argument-list__argument__type">string</span>
+                 = <span class="phpdocumentor-argument-list__argument__default-value">'action'</span>            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>'read' (rendering update data: may be denied a
+fetch, counts against the request budget of an
+interactive request, honours the host breaker)
+or 'action' (install, update, details modal).</p>
+</section>
+
+            </dd>
+            </dl>
+
     
 
         
@@ -869,6 +2182,647 @@ try to fetch the manifest simultaneously.</p>
             -private
                                                         "
 >
+    <h4 class="phpdocumentor-element__name" id="method_icons">
+        icons()
+        <a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_icons" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-plugin-updater.php"><a href="files/includes-class-plugin-updater.html"><abbr title="includes/class-plugin-updater.php">class-plugin-updater.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">686</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Icon URLs from the manifest as an array (core indexes it with []).</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">private</span>
+                    <span class="phpdocumentor-signature__name">icons</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__type">object&nbsp;</span><span class="phpdocumentor-signature__argument__name">$remote</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$slug</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">array&lt;string, string&gt;</span></code>
+
+    <div class="phpdocumentor-label-line">
+        </div>
+    
+    
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-argument-list__argument__name">$remote</span>
+                : <span class="phpdocumentor-argument-list__argument__type">object</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>Manifest.</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-argument-list__argument__name">$slug</span>
+                : <span class="phpdocumentor-argument-list__argument__type">string</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>Plugin slug.</p>
+</section>
+
+            </dd>
+            </dl>
+
+    
+
+        
+    
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type">array&lt;string, string&gt;</span>
+            </section>
+
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -private
+                                                        "
+>
+    <h4 class="phpdocumentor-element__name" id="method_is_background">
+        is_background()
+        <a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_is_background" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-plugin-updater.php"><a href="files/includes-class-plugin-updater.html"><abbr title="includes/class-plugin-updater.php">class-plugin-updater.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">537</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Whether this request is cron or WP-CLI, where latency does not matter.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">private</span>
+                    <span class="phpdocumentor-signature__name">is_background</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">bool</span></code>
+
+    <div class="phpdocumentor-label-line">
+        </div>
+    
+    
+    
+    
+
+        
+    
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type">bool</span>
+            </section>
+
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -private
+                                                        "
+>
+    <h4 class="phpdocumentor-element__name" id="method_is_leader">
+        is_leader()
+        <a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_is_leader" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-plugin-updater.php"><a href="files/includes-class-plugin-updater.html"><abbr title="includes/class-plugin-updater.php">class-plugin-updater.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">263</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Whether this copy is the elected leader.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">private</span>
+                    <span class="phpdocumentor-signature__name">is_leader</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">bool</span></code>
+
+    <div class="phpdocumentor-label-line">
+        </div>
+    
+        <section class="phpdocumentor-description"><p>Highest UPDATER_VERSION wins, ties go to the first registered copy. Not
+memoised: a transient read at init priority 5 can happen before every copy
+has registered, and the answer must settle once they have.</p>
+</section>
+
+    
+    
+
+        
+    
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type">bool</span>
+            </section>
+
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -private
+                                                        "
+>
+    <h4 class="phpdocumentor-element__name" id="method_is_plugin_loaded">
+        is_plugin_loaded()
+        <a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_is_plugin_loaded" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-plugin-updater.php"><a href="files/includes-class-plugin-updater.html"><abbr title="includes/class-plugin-updater.php">class-plugin-updater.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">423</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Whether a plugin&#039;s main file was actually included in this request.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">private</span>
+                    <span class="phpdocumentor-signature__name">is_plugin_loaded</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$file</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">bool</span></code>
+
+    <div class="phpdocumentor-label-line">
+        </div>
+    
+        <section class="phpdocumentor-description"><p>Asks PHP, not the active_plugins option: <code class="prettyprint">wp --skip-plugins=&lt;slug&gt;</code> keeps
+the option but never loads the file, and a plugin listed as active but not
+loaded must be served like an inactive one.</p>
+</section>
+
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-argument-list__argument__name">$file</span>
+                : <span class="phpdocumentor-argument-list__argument__type">string</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>Plugin file relative to the plugins directory.</p>
+</section>
+
+            </dd>
+            </dl>
+
+    
+
+        
+    
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type">bool</span>
+            </section>
+
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -private
+                                                        "
+>
+    <h4 class="phpdocumentor-element__name" id="method_is_registered_file">
+        is_registered_file()
+        <a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_is_registered_file" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-plugin-updater.php"><a href="files/includes-class-plugin-updater.html"><abbr title="includes/class-plugin-updater.php">class-plugin-updater.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">1198</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Whether a plugin file belongs to a registered (1.5+) copy.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">private</span>
+                    <span class="phpdocumentor-signature__name">is_registered_file</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$file</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">bool</span></code>
+
+    <div class="phpdocumentor-label-line">
+        </div>
+    
+    
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-argument-list__argument__name">$file</span>
+                : <span class="phpdocumentor-argument-list__argument__type">string</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>Plugin file.</p>
+</section>
+
+            </dd>
+            </dl>
+
+    
+
+        
+    
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type">bool</span>
+            </section>
+
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -private
+                                                        "
+>
+    <h4 class="phpdocumentor-element__name" id="method_is_vcs_checkout">
+        is_vcs_checkout()
+        <a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_is_vcs_checkout" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-plugin-updater.php"><a href="files/includes-class-plugin-updater.html"><abbr title="includes/class-plugin-updater.php">class-plugin-updater.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">442</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Whether a plugin directory is a version-control checkout.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">private</span>
+                    <span class="phpdocumentor-signature__name">is_vcs_checkout</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$dir</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">bool</span></code>
+
+    <div class="phpdocumentor-label-line">
+        </div>
+    
+        <section class="phpdocumentor-description"><p>Updating one replaces the directory and deletes the working tree, so such a
+member is never offered an update. Same rule and filter as core's
+automatic updater.</p>
+</section>
+
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-argument-list__argument__name">$dir</span>
+                : <span class="phpdocumentor-argument-list__argument__type">string</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>Absolute plugin directory.</p>
+</section>
+
+            </dd>
+            </dl>
+
+    
+
+        
+    
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type">bool</span>
+            </section>
+
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -private
+                                                        "
+>
+    <h4 class="phpdocumentor-element__name" id="method_log">
+        log()
+        <a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_log" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-plugin-updater.php"><a href="files/includes-class-plugin-updater.html"><abbr title="includes/class-plugin-updater.php">class-plugin-updater.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">1234</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Write a log line in WP_DEBUG mode.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">private</span>
+                    <span class="phpdocumentor-signature__name">log</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$message</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">void</span></code>
+
+    <div class="phpdocumentor-label-line">
+        </div>
+    
+    
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-argument-list__argument__name">$message</span>
+                : <span class="phpdocumentor-argument-list__argument__type">string</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>Message.</p>
+</section>
+
+            </dd>
+            </dl>
+
+    
+
+        
+    
+    
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -private
+                                                        "
+>
+    <h4 class="phpdocumentor-element__name" id="method_may_fetch_on_read">
+        may_fetch_on_read()
+        <a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_may_fetch_on_read" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-plugin-updater.php"><a href="files/includes-class-plugin-updater.html"><abbr title="includes/class-plugin-updater.php">class-plugin-updater.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">527</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Whether rendering update data may fetch an uncached manifest.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">private</span>
+                    <span class="phpdocumentor-signature__name">may_fetch_on_read</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">bool</span></code>
+
+    <div class="phpdocumentor-label-line">
+        </div>
+    
+        <section class="phpdocumentor-description"><p>Only for users who can act on updates, cron and WP-CLI. An anonymous front
+end request never fetches; installs, updates and the details modal always
+may (they pass $context 'action').</p>
+</section>
+
+    
+    
+
+        
+    
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type">bool</span>
+            </section>
+
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -private
+                                                        "
+>
+    <h4 class="phpdocumentor-element__name" id="method_member_by_folder">
+        member_by_folder()
+        <a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_member_by_folder" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-plugin-updater.php"><a href="files/includes-class-plugin-updater.html"><abbr title="includes/class-plugin-updater.php">class-plugin-updater.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">470</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Find a member by its folder name (the slug WordPress uses for it).</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">private</span>
+                    <span class="phpdocumentor-signature__name">member_by_folder</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$folder</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">array{slug: string, folder: string, file: string, version: string, manifest: string, frozen: bool}|null</span></code>
+
+    <div class="phpdocumentor-label-line">
+        </div>
+    
+    
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-argument-list__argument__name">$folder</span>
+                : <span class="phpdocumentor-argument-list__argument__type">string</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>Plugin folder.</p>
+</section>
+
+            </dd>
+            </dl>
+
+    
+
+        
+    
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type">array{slug: string, folder: string, file: string, version: string, manifest: string, frozen: bool}|null</span>
+            </section>
+
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -private
+                                                        "
+>
+    <h4 class="phpdocumentor-element__name" id="method_members">
+        members()
+        <a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_members" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-plugin-updater.php"><a href="files/includes-class-plugin-updater.html"><abbr title="includes/class-plugin-updater.php">class-plugin-updater.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">375</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">The JPKCom plugins this leader serves, keyed by plugin file.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">private</span>
+                    <span class="phpdocumentor-signature__name">members</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">array&lt;string, array{slug: string, folder: string, file: string, version: string, manifest: string, frozen: bool}&gt;</span></code>
+
+    <div class="phpdocumentor-label-line">
+        </div>
+    
+        <section class="phpdocumentor-description"><p>Members are (a) every loaded 1.5+ copy from the registry and (b) every
+discovered JPKCom plugin whose code is NOT loaded in this request. A plugin
+that is loaded but not registered runs an older updater copy, which serves
+it against its own cache; the leader stays out of its way.</p>
+<p>A member is &quot;frozen&quot; (only ever listed as up to date, never offered a
+package) when it is a version-control checkout, which an update would wipe,
+or when its folder is not named after its slug (e.g. jpkcom-foo-main from a
+GitHub source download): the release ZIP unpacks into jpkcom-foo/, so an
+update would delete the renamed folder and leave the active plugin missing.</p>
+<p>The cache is tied to the registry, because copies register one by one
+during init and a transient read can happen in between.</p>
+</section>
+
+    
+    
+
+        
+    
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type">array&lt;string, array{slug: string, folder: string, file: string, version: string, manifest: string, frozen: bool}&gt;</span>
+            </section>
+
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -private
+                                                        "
+>
+    <h4 class="phpdocumentor-element__name" id="method_package_url">
+        package_url()
+        <a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_package_url" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-plugin-updater.php"><a href="files/includes-class-plugin-updater.html"><abbr title="includes/class-plugin-updater.php">class-plugin-updater.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">666</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">The manifest&#039;s download URL, if it is a release asset of this very plugin.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">private</span>
+                    <span class="phpdocumentor-signature__name">package_url</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__type">object&nbsp;</span><span class="phpdocumentor-signature__argument__name">$remote</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$slug</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string</span></code>
+
+    <div class="phpdocumentor-label-line">
+        </div>
+    
+        <section class="phpdocumentor-description"><p>Anything else is never handed to WordPress, so the checksum gate always
+recognises what this class emits.</p>
+</section>
+
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-argument-list__argument__name">$remote</span>
+                : <span class="phpdocumentor-argument-list__argument__type">object</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>Manifest.</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-argument-list__argument__name">$slug</span>
+                : <span class="phpdocumentor-argument-list__argument__type">string</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>Plugin slug.</p>
+</section>
+
+            </dd>
+            </dl>
+
+    
+
+        
+    
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type">string</span>
+                    &mdash;
+                <section class="phpdocumentor-description"><p>Validated URL or ''.</p>
+</section>
+
+            </section>
+
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -private
+                                                        "
+>
+    <h4 class="phpdocumentor-element__name" id="method_register">
+        register()
+        <a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_register" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-plugin-updater.php"><a href="files/includes-class-plugin-updater.html"><abbr title="includes/class-plugin-updater.php">class-plugin-updater.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">202</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Add this copy to the shared registry.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">private</span>
+                    <span class="phpdocumentor-signature__name">register</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">void</span></code>
+
+    <div class="phpdocumentor-label-line">
+        </div>
+    
+    
+    
+    
+
+        
+    
+    
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -private
+                                                        "
+>
+    <h4 class="phpdocumentor-element__name" id="method_registry">
+        registry()
+        <a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_registry" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-plugin-updater.php"><a href="files/includes-class-plugin-updater.html"><abbr title="includes/class-plugin-updater.php">class-plugin-updater.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">227</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Valid registry entries, in registration order.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">private</span>
+                    <span class="phpdocumentor-signature__name">registry</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">array&lt;int, array{v: string, id: int, file: string, slug: string, manifest: string, version: string}&gt;</span></code>
+
+    <div class="phpdocumentor-label-line">
+        </div>
+    
+        <section class="phpdocumentor-description"><p>Malformed entries and entries that do not describe a JPKCom plugin (main
+file <slug>.php, manifest on jpkcom.github.io for that slug) are skipped,
+also for the leader election. No method is ever called on an entry, so a
+broken entry cannot break this copy.</p>
+</section>
+
+    
+    
+
+        
+    
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type">array&lt;int, array{v: string, id: int, file: string, slug: string, manifest: string, version: string}&gt;</span>
+            </section>
+
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -private
+                                                        "
+>
     <h4 class="phpdocumentor-element__name" id="method_remember_failure">
         remember_failure()
         <a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_remember_failure" class="headerlink"><i class="fas fa-link"></i></a>
@@ -877,7 +2831,7 @@ try to fetch the manifest simultaneously.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="includes/class-plugin-updater.php"><a href="files/includes-class-plugin-updater.html"><abbr title="includes/class-plugin-updater.php">class-plugin-updater.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">205</span>
+    <span class="phpdocumentor-element-found-in__line">649</span>
 
     </aside>
 
@@ -885,7 +2839,7 @@ try to fetch the manifest simultaneously.</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">private</span>
-                    <span class="phpdocumentor-signature__name">remember_failure</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">void</span></code>
+                    <span class="phpdocumentor-signature__name">remember_failure</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$cache_key</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__type">bool&nbsp;</span><span class="phpdocumentor-signature__argument__name">$host_wide</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">void</span></code>
 
     <div class="phpdocumentor-label-line">
         </div>
@@ -894,12 +2848,208 @@ try to fetch the manifest simultaneously.</p>
 instead of re-running it (and its timeout) on every page load.</p>
 </section>
 
-    
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-argument-list__argument__name">$cache_key</span>
+                : <span class="phpdocumentor-argument-list__argument__type">string</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>Manifest cache key.</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-argument-list__argument__name">$host_wide</span>
+                : <span class="phpdocumentor-argument-list__argument__type">bool</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>Whether the failure concerns the host, not the plugin.</p>
+</section>
+
+            </dd>
+            </dl>
+
     
 
         
     
     
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -private
+                                                        "
+>
+    <h4 class="phpdocumentor-element__name" id="method_runs_old_copy">
+        runs_old_copy()
+        <a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_runs_old_copy" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-plugin-updater.php"><a href="files/includes-class-plugin-updater.html"><abbr title="includes/class-plugin-updater.php">class-plugin-updater.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">1188</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Whether a JPKCom plugin&#039;s own pre-1.5 updater copy runs in this request.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">private</span>
+                    <span class="phpdocumentor-signature__name">runs_old_copy</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$file</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">bool</span></code>
+
+    <div class="phpdocumentor-label-line">
+        </div>
+    
+    
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-argument-list__argument__name">$file</span>
+                : <span class="phpdocumentor-argument-list__argument__type">string</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>Plugin file.</p>
+</section>
+
+            </dd>
+            </dl>
+
+    
+
+        
+    
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type">bool</span>
+            </section>
+
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -private
+                                                        "
+>
+    <h4 class="phpdocumentor-element__name" id="method_text">
+        text()
+        <a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_text" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-plugin-updater.php"><a href="files/includes-class-plugin-updater.html"><abbr title="includes/class-plugin-updater.php">class-plugin-updater.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">491</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">A manifest value as plain text, or the fallback when it is not a scalar.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">private</span>
+                    <span class="phpdocumentor-signature__name">text</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__type">mixed&nbsp;</span><span class="phpdocumentor-signature__argument__name">$value</span></span><span class="phpdocumentor-signature__argument"><span>[</span><span>, </span><span class="phpdocumentor-signature__argument__type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$fallback</span><span> = </span><span class="phpdocumentor-signature__argument__default-value">''</span><span> ]</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string</span></code>
+
+    <div class="phpdocumentor-label-line">
+        </div>
+    
+        <section class="phpdocumentor-description"><p>Manifests are remote data and are cached by every copy since 1.4.0; an
+object or array where a string belongs must not turn into a fatal error on
+every admin page.</p>
+</section>
+
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-argument-list__argument__name">$value</span>
+                : <span class="phpdocumentor-argument-list__argument__type">mixed</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>Manifest value.</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-argument-list__argument__name">$fallback</span>
+                : <span class="phpdocumentor-argument-list__argument__type">string</span>
+                 = <span class="phpdocumentor-argument-list__argument__default-value">''</span>            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>Value for a missing or non-scalar field.</p>
+</section>
+
+            </dd>
+            </dl>
+
+    
+
+        
+    
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type">string</span>
+            </section>
+
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -private
+                                                        "
+>
+    <h4 class="phpdocumentor-element__name" id="method_url">
+        url()
+        <a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_url" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-plugin-updater.php"><a href="files/includes-class-plugin-updater.html"><abbr title="includes/class-plugin-updater.php">class-plugin-updater.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">504</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">A manifest value as a sanitised URL, or the fallback.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">private</span>
+                    <span class="phpdocumentor-signature__name">url</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__type">mixed&nbsp;</span><span class="phpdocumentor-signature__argument__name">$value</span></span><span class="phpdocumentor-signature__argument"><span>[</span><span>, </span><span class="phpdocumentor-signature__argument__type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$fallback</span><span> = </span><span class="phpdocumentor-signature__argument__default-value">''</span><span> ]</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string</span></code>
+
+    <div class="phpdocumentor-label-line">
+        </div>
+    
+    
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-argument-list__argument__name">$value</span>
+                : <span class="phpdocumentor-argument-list__argument__type">mixed</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>Manifest value.</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-argument-list__argument__name">$fallback</span>
+                : <span class="phpdocumentor-argument-list__argument__type">string</span>
+                 = <span class="phpdocumentor-argument-list__argument__default-value">''</span>            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>Value for a missing or non-string field.</p>
+</section>
+
+            </dd>
+            </dl>
+
+    
+
+        
+    
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type">string</span>
+            </section>
+
 </article>
             </section>
 
@@ -915,20 +3065,42 @@ instead of re-running it (and its timeout) on every page load.</p>
             <li class="phpdocumentor-on-this-page-section__title">Table Of Contents</li>
             <li>
                 <ul class="phpdocumentor-list -clean">
+                                        <li><a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#toc-constants">Constants</a></li>
                                                             <li><a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#toc-properties">Properties</a></li>
                                                             <li><a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#toc-methods">Methods</a></li>
                                     </ul>
             </li>
+                            <li class="phpdocumentor-on-this-page-section__title">Constants</li>
+                <li>
+                    <ul class="phpdocumentor-list -clean">
+                                                    <li class=""><a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#constant_UPDATER_VERSION">UPDATER_VERSION</a></li>
+                                                    <li class=""><a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#constant_ASSET_PATTERN">ASSET_PATTERN</a></li>
+                                                    <li class=""><a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#constant_HOST_FAIL_KEY">HOST_FAIL_KEY</a></li>
+                                                    <li class=""><a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#constant_MANIFEST_URL_FORMAT">MANIFEST_URL_FORMAT</a></li>
+                                                    <li class=""><a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#constant_PACKAGE_PATTERN">PACKAGE_PATTERN</a></li>
+                                                    <li class=""><a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#constant_PLUGIN_URI_PATTERN">PLUGIN_URI_PATTERN</a></li>
+                                                    <li class=""><a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#constant_READ_FETCH_BUDGET">READ_FETCH_BUDGET</a></li>
+                                                    <li class=""><a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#constant_REGISTRY">REGISTRY</a></li>
+                                                    <li class=""><a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#constant_SLOW_FETCH_SECONDS">SLOW_FETCH_SECONDS</a></li>
+                                                    <li class=""><a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#constant_SLUG_PATTERN">SLUG_PATTERN</a></li>
+                                            </ul>
+                </li>
             
                             <li class="phpdocumentor-on-this-page-section__title">Properties</li>
                 <li>
                     <ul class="phpdocumentor-list -clean">
-                                                    <li class=""><a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#property_cache_enabled">$cache_enabled</a></li>
                                                     <li class=""><a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#property_cache_key">$cache_key</a></li>
                                                     <li class=""><a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#property_current_version">$current_version</a></li>
+                                                    <li class=""><a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#property_discovered">$discovered</a></li>
+                                                    <li class=""><a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#property_leader_for_size">$leader_for_size</a></li>
+                                                    <li class=""><a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#property_leader_id">$leader_id</a></li>
                                                     <li class=""><a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#property_manifest_url">$manifest_url</a></li>
+                                                    <li class=""><a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#property_members">$members</a></li>
+                                                    <li class=""><a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#property_members_signature">$members_signature</a></li>
                                                     <li class=""><a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#property_plugin_file">$plugin_file</a></li>
                                                     <li class=""><a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#property_plugin_slug">$plugin_slug</a></li>
+                                                    <li class=""><a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#property_read_fetches">$read_fetches</a></li>
+                                                    <li class=""><a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#property_validated_urls">$validated_urls</a></li>
                                             </ul>
                 </li>
             
@@ -938,10 +3110,33 @@ instead of re-running it (and its timeout) on every page load.</p>
                                             <li class=""><a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method___construct">__construct()</a></li>
                                             <li class=""><a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_check_update">check_update()</a></li>
                                             <li class=""><a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_clear_cache">clear_cache()</a></li>
+                                            <li class=""><a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_forget_members">forget_members()</a></li>
                                             <li class=""><a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_plugin_info">plugin_info()</a></li>
+                                            <li class=""><a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_strip_packages">strip_packages()</a></li>
                                             <li class=""><a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_verify_download_checksum">verify_download_checksum()</a></li>
+                                            <li class=""><a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_cache_key_for">cache_key_for()</a></li>
+                                            <li class=""><a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_checksum_error">checksum_error()</a></li>
+                                            <li class=""><a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_discovered">discovered()</a></li>
+                                            <li class=""><a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_elect">elect()</a></li>
+                                            <li class=""><a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_entry">entry()</a></li>
                                             <li class=""><a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_get_remote_manifest">get_remote_manifest()</a></li>
+                                            <li class=""><a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_icons">icons()</a></li>
+                                            <li class=""><a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_is_background">is_background()</a></li>
+                                            <li class=""><a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_is_leader">is_leader()</a></li>
+                                            <li class=""><a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_is_plugin_loaded">is_plugin_loaded()</a></li>
+                                            <li class=""><a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_is_registered_file">is_registered_file()</a></li>
+                                            <li class=""><a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_is_vcs_checkout">is_vcs_checkout()</a></li>
+                                            <li class=""><a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_log">log()</a></li>
+                                            <li class=""><a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_may_fetch_on_read">may_fetch_on_read()</a></li>
+                                            <li class=""><a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_member_by_folder">member_by_folder()</a></li>
+                                            <li class=""><a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_members">members()</a></li>
+                                            <li class=""><a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_package_url">package_url()</a></li>
+                                            <li class=""><a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_register">register()</a></li>
+                                            <li class=""><a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_registry">registry()</a></li>
                                             <li class=""><a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_remember_failure">remember_failure()</a></li>
+                                            <li class=""><a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_runs_old_copy">runs_old_copy()</a></li>
+                                            <li class=""><a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_text">text()</a></li>
+                                            <li class=""><a href="classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_url">url()</a></li>
                                     </ul>
             </li>
                     </ul>

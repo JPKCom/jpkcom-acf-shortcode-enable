@@ -105,19 +105,21 @@
 hosted on GitHub. It integrates with the WordPress plugin update system and provides
 comprehensive security features including:</p>
 <ul>
-<li>SHA256 checksum verification of downloaded packages</li>
+<li>SHA256 checksum verification of downloaded packages (fail closed)</li>
 <li>URL validation and sanitization of all remote data</li>
 <li>Race condition prevention for manifest fetching</li>
 <li>Comprehensive error logging in WP_DEBUG mode</li>
-<li>Site-transient caching with 24-hour TTL (one cache per multisite network)</li>
-<li>Backward compatibility with manifests without checksums</li>
+<li>Site-transient caching with a ~24-hour TTL (one cache per multisite network)</li>
+<li>Family updates: one loaded copy serves every installed JPKCom plugin,
+including inactive ones whose own code never runs</li>
 </ul>
 <p>Security Features:</p>
 <ul>
-<li>All URLs are validated using wp_http_validate_url() before use</li>
+<li>All URLs are validated before use; package URLs must be JPKCom release assets</li>
 <li>All manifest data is sanitized before display</li>
 <li>Download packages are verified against SHA256 checksum from manifest</li>
 <li>Failed verifications prevent installation and log errors</li>
+<li>Package URLs are never persisted in the update transient</li>
 </ul>
 <p>Namespace: JPKComAcfShortcodeEnableGitUpdate
 PHP Version: 8.3+
@@ -134,6 +136,17 @@ WordPress Version: 6.9+ (matches the plugin header)</p>
                     <dt class="phpdocumentor-tag-list__entry">
                 <span class="phpdocumentor-tag__name">since</span>
             </dt>
+                            <dd class="phpdocumentor-tag-list__definition">
+                                            <span class="phpdocumentor-tag-link">1.5.0</span>
+                                                                                                            <section class="phpdocumentor-description"><p>Family updates: every JPKCom plugin carries this class, the copy
+with the highest UPDATER_VERSION is elected leader and serves all
+installed JPKCom plugins (active and inactive); package URLs are
+stripped before the update transient is stored; the checksum gate
+verifies a package another filter already supplied instead of
+trusting it</p>
+</section>
+
+                                    </dd>
                             <dd class="phpdocumentor-tag-list__definition">
                                             <span class="phpdocumentor-tag-link">1.4.0</span>
                                                                                                             <section class="phpdocumentor-description"><p>Manifest cache, failure marker and fetch lock are site

@@ -11,15 +11,100 @@ Search.appendIndex(
             "summary": "Constructor",
             "url": "classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method___construct"
         },                {
+            "fqsen": "\\JPKComAcfShortcodeEnableGitUpdate\\JPKComGitPluginUpdater\u003A\u003Aregister\u0028\u0029",
+            "name": "register",
+            "summary": "Add\u0020this\u0020copy\u0020to\u0020the\u0020shared\u0020registry.",
+            "url": "classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_register"
+        },                {
+            "fqsen": "\\JPKComAcfShortcodeEnableGitUpdate\\JPKComGitPluginUpdater\u003A\u003Aregistry\u0028\u0029",
+            "name": "registry",
+            "summary": "Valid\u0020registry\u0020entries,\u0020in\u0020registration\u0020order.",
+            "url": "classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_registry"
+        },                {
+            "fqsen": "\\JPKComAcfShortcodeEnableGitUpdate\\JPKComGitPluginUpdater\u003A\u003Ais_leader\u0028\u0029",
+            "name": "is_leader",
+            "summary": "Whether\u0020this\u0020copy\u0020is\u0020the\u0020elected\u0020leader.",
+            "url": "classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_is_leader"
+        },                {
+            "fqsen": "\\JPKComAcfShortcodeEnableGitUpdate\\JPKComGitPluginUpdater\u003A\u003Aelect\u0028\u0029",
+            "name": "elect",
+            "summary": "Elect\u0020the\u0020leader\u0020among\u0020the\u0020registered\u0020copies.",
+            "url": "classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_elect"
+        },                {
+            "fqsen": "\\JPKComAcfShortcodeEnableGitUpdate\\JPKComGitPluginUpdater\u003A\u003A\u0024discovered",
+            "name": "discovered",
+            "summary": "",
+            "url": "classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#property_discovered"
+        },                {
+            "fqsen": "\\JPKComAcfShortcodeEnableGitUpdate\\JPKComGitPluginUpdater\u003A\u003A\u0024members",
+            "name": "members",
+            "summary": "",
+            "url": "classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#property_members"
+        },                {
+            "fqsen": "\\JPKComAcfShortcodeEnableGitUpdate\\JPKComGitPluginUpdater\u003A\u003Ais_plugin_loaded\u0028\u0029",
+            "name": "is_plugin_loaded",
+            "summary": "Whether\u0020a\u0020plugin\u0027s\u0020main\u0020file\u0020was\u0020actually\u0020included\u0020in\u0020this\u0020request.",
+            "url": "classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_is_plugin_loaded"
+        },                {
+            "fqsen": "\\JPKComAcfShortcodeEnableGitUpdate\\JPKComGitPluginUpdater\u003A\u003Ais_vcs_checkout\u0028\u0029",
+            "name": "is_vcs_checkout",
+            "summary": "Whether\u0020a\u0020plugin\u0020directory\u0020is\u0020a\u0020version\u002Dcontrol\u0020checkout.",
+            "url": "classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_is_vcs_checkout"
+        },                {
+            "fqsen": "\\JPKComAcfShortcodeEnableGitUpdate\\JPKComGitPluginUpdater\u003A\u003Aforget_members\u0028\u0029",
+            "name": "forget_members",
+            "summary": "Drop\u0020the\u0020plugin\u0020scan\u0020and\u0020member\u0020cache\u0020after\u0020a\u0020plugin\u0020was\u0020deleted\u0020or\u0020updated.",
+            "url": "classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_forget_members"
+        },                {
+            "fqsen": "\\JPKComAcfShortcodeEnableGitUpdate\\JPKComGitPluginUpdater\u003A\u003Amember_by_folder\u0028\u0029",
+            "name": "member_by_folder",
+            "summary": "Find\u0020a\u0020member\u0020by\u0020its\u0020folder\u0020name\u0020\u0028the\u0020slug\u0020WordPress\u0020uses\u0020for\u0020it\u0029.",
+            "url": "classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_member_by_folder"
+        },                {
+            "fqsen": "\\JPKComAcfShortcodeEnableGitUpdate\\JPKComGitPluginUpdater\u003A\u003Atext\u0028\u0029",
+            "name": "text",
+            "summary": "A\u0020manifest\u0020value\u0020as\u0020plain\u0020text,\u0020or\u0020the\u0020fallback\u0020when\u0020it\u0020is\u0020not\u0020a\u0020scalar.",
+            "url": "classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_text"
+        },                {
+            "fqsen": "\\JPKComAcfShortcodeEnableGitUpdate\\JPKComGitPluginUpdater\u003A\u003Aurl\u0028\u0029",
+            "name": "url",
+            "summary": "A\u0020manifest\u0020value\u0020as\u0020a\u0020sanitised\u0020URL,\u0020or\u0020the\u0020fallback.",
+            "url": "classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_url"
+        },                {
+            "fqsen": "\\JPKComAcfShortcodeEnableGitUpdate\\JPKComGitPluginUpdater\u003A\u003Acache_key_for\u0028\u0029",
+            "name": "cache_key_for",
+            "summary": "Manifest\u0020cache\u0020key,\u0020shared\u0020with\u0020every\u0020copy\u0020back\u0020to\u00201.4.0.",
+            "url": "classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_cache_key_for"
+        },                {
+            "fqsen": "\\JPKComAcfShortcodeEnableGitUpdate\\JPKComGitPluginUpdater\u003A\u003Amay_fetch_on_read\u0028\u0029",
+            "name": "may_fetch_on_read",
+            "summary": "Whether\u0020rendering\u0020update\u0020data\u0020may\u0020fetch\u0020an\u0020uncached\u0020manifest.",
+            "url": "classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_may_fetch_on_read"
+        },                {
+            "fqsen": "\\JPKComAcfShortcodeEnableGitUpdate\\JPKComGitPluginUpdater\u003A\u003Ais_background\u0028\u0029",
+            "name": "is_background",
+            "summary": "Whether\u0020this\u0020request\u0020is\u0020cron\u0020or\u0020WP\u002DCLI,\u0020where\u0020latency\u0020does\u0020not\u0020matter.",
+            "url": "classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_is_background"
+        },                {
             "fqsen": "\\JPKComAcfShortcodeEnableGitUpdate\\JPKComGitPluginUpdater\u003A\u003Aget_remote_manifest\u0028\u0029",
             "name": "get_remote_manifest",
-            "summary": "Fetch\u0020and\u0020decode\u0020the\u0020remote\u0020manifest\u0020file.",
+            "summary": "Fetch\u0020and\u0020decode\u0020a\u0020remote\u0020manifest\u0020file.",
             "url": "classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_get_remote_manifest"
         },                {
             "fqsen": "\\JPKComAcfShortcodeEnableGitUpdate\\JPKComGitPluginUpdater\u003A\u003Aremember_failure\u0028\u0029",
             "name": "remember_failure",
             "summary": "Back\u0020off\u0020after\u0020a\u0020failed\u0020manifest\u0020fetch.",
             "url": "classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_remember_failure"
+        },                {
+            "fqsen": "\\JPKComAcfShortcodeEnableGitUpdate\\JPKComGitPluginUpdater\u003A\u003Apackage_url\u0028\u0029",
+            "name": "package_url",
+            "summary": "The\u0020manifest\u0027s\u0020download\u0020URL,\u0020if\u0020it\u0020is\u0020a\u0020release\u0020asset\u0020of\u0020this\u0020very\u0020plugin.",
+            "url": "classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_package_url"
+        },                {
+            "fqsen": "\\JPKComAcfShortcodeEnableGitUpdate\\JPKComGitPluginUpdater\u003A\u003Aicons\u0028\u0029",
+            "name": "icons",
+            "summary": "Icon\u0020URLs\u0020from\u0020the\u0020manifest\u0020as\u0020an\u0020array\u0020\u0028core\u0020indexes\u0020it\u0020with\u0020\u005B\u005D\u0029.",
+            "url": "classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_icons"
         },                {
             "fqsen": "\\JPKComAcfShortcodeEnableGitUpdate\\JPKComGitPluginUpdater\u003A\u003Aplugin_info\u0028\u0029",
             "name": "plugin_info",
@@ -28,18 +113,98 @@ Search.appendIndex(
         },                {
             "fqsen": "\\JPKComAcfShortcodeEnableGitUpdate\\JPKComGitPluginUpdater\u003A\u003Acheck_update\u0028\u0029",
             "name": "check_update",
-            "summary": "Check\u0020for\u0020available\u0020plugin\u0020updates.",
+            "summary": "Inject\u0020update\u0020information\u0020for\u0020every\u0020family\u0020member.",
             "url": "classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_check_update"
+        },                {
+            "fqsen": "\\JPKComAcfShortcodeEnableGitUpdate\\JPKComGitPluginUpdater\u003A\u003Aentry\u0028\u0029",
+            "name": "entry",
+            "summary": "Build\u0020one\u0020update\u0020entry.",
+            "url": "classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_entry"
+        },                {
+            "fqsen": "\\JPKComAcfShortcodeEnableGitUpdate\\JPKComGitPluginUpdater\u003A\u003Astrip_packages\u0028\u0029",
+            "name": "strip_packages",
+            "summary": "Remove\u0020JPKCom\u0020package\u0020URLs\u0020before\u0020the\u0020update\u0020transient\u0020is\u0020stored.",
+            "url": "classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_strip_packages"
         },                {
             "fqsen": "\\JPKComAcfShortcodeEnableGitUpdate\\JPKComGitPluginUpdater\u003A\u003Aclear_cache\u0028\u0029",
             "name": "clear_cache",
-            "summary": "Clear\u0020cached\u0020manifest\u0020after\u0020a\u0020successful\u0020update.",
+            "summary": "Clear\u0020cached\u0020manifests\u0020after\u0020an\u0020update.",
             "url": "classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_clear_cache"
         },                {
             "fqsen": "\\JPKComAcfShortcodeEnableGitUpdate\\JPKComGitPluginUpdater\u003A\u003Averify_download_checksum\u0028\u0029",
             "name": "verify_download_checksum",
             "summary": "Verify\u0020download\u0020checksum\u0020before\u0020installation.",
             "url": "classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_verify_download_checksum"
+        },                {
+            "fqsen": "\\JPKComAcfShortcodeEnableGitUpdate\\JPKComGitPluginUpdater\u003A\u003Aruns_old_copy\u0028\u0029",
+            "name": "runs_old_copy",
+            "summary": "Whether\u0020a\u0020JPKCom\u0020plugin\u0027s\u0020own\u0020pre\u002D1.5\u0020updater\u0020copy\u0020runs\u0020in\u0020this\u0020request.",
+            "url": "classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_runs_old_copy"
+        },                {
+            "fqsen": "\\JPKComAcfShortcodeEnableGitUpdate\\JPKComGitPluginUpdater\u003A\u003Ais_registered_file\u0028\u0029",
+            "name": "is_registered_file",
+            "summary": "Whether\u0020a\u0020plugin\u0020file\u0020belongs\u0020to\u0020a\u0020registered\u0020\u00281.5\u002B\u0029\u0020copy.",
+            "url": "classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_is_registered_file"
+        },                {
+            "fqsen": "\\JPKComAcfShortcodeEnableGitUpdate\\JPKComGitPluginUpdater\u003A\u003Achecksum_error\u0028\u0029",
+            "name": "checksum_error",
+            "summary": "Checksum\u0020mismatch\u0020error.",
+            "url": "classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_checksum_error"
+        },                {
+            "fqsen": "\\JPKComAcfShortcodeEnableGitUpdate\\JPKComGitPluginUpdater\u003A\u003Alog\u0028\u0029",
+            "name": "log",
+            "summary": "Write\u0020a\u0020log\u0020line\u0020in\u0020WP_DEBUG\u0020mode.",
+            "url": "classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#method_log"
+        },                {
+            "fqsen": "\\JPKComAcfShortcodeEnableGitUpdate\\JPKComGitPluginUpdater\u003A\u003AUPDATER_VERSION",
+            "name": "UPDATER_VERSION",
+            "summary": "Version\u0020of\u0020this\u0020updater\u0020implementation.\u0020Decides\u0020the\u0020leader\u0020election,\u0020so\u0020it\nmust\u0020be\u0020raised\u0020with\u0020every\u0020change\u0020to\u0020the\u0020family\u0020logic.",
+            "url": "classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#constant_UPDATER_VERSION"
+        },                {
+            "fqsen": "\\JPKComAcfShortcodeEnableGitUpdate\\JPKComGitPluginUpdater\u003A\u003AREGISTRY",
+            "name": "REGISTRY",
+            "summary": "Global\u0020registry\u0020shared\u0020by\u0020all\u0020copies\u0020\u0028each\u0020copy\u0020lives\u0020in\u0020its\u0020own\u0020namespace,\nso\u0020class\u0020statics\u0020are\u0020not\u0020shared\u0029.\u0020Entries\u0020are\u0020plain\u0020arrays\u0020with\u0020the\u0020scalar\nkeys\u0020v,\u0020id,\u0020file,\u0020slug,\u0020manifest,\u0020version.\u0020Later\u0020versions\u0020may\u0020add\u0020keys\u0020but\nmust\u0020never\u0020rename\u0020or\u0020retype\u0020these.",
+            "url": "classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#constant_REGISTRY"
+        },                {
+            "fqsen": "\\JPKComAcfShortcodeEnableGitUpdate\\JPKComGitPluginUpdater\u003A\u003APLUGIN_URI_PATTERN",
+            "name": "PLUGIN_URI_PATTERN",
+            "summary": "A\u0020JPKCom\u0020plugin\u0020is\u0020recognised\u0020by\u0020its\u0020Plugin\u0020URI,\u0020which\u0020every\u0020released\u0020version\nof\u0020every\u0020JPKCom\u0020plugin\u0020carries\u0020\u0028unlike\u0020the\u0020Update\u0020URI\u0020header,\u0020added\u0020only\u0020in\nthe\u00202026\u002D10\u002D19\u0020releases\u0029,\u0020together\u0020with\u0020the\u0020canonical\u0020file\u0020\u003Cslug\u003E\/\u003Cslug\u003E.php.",
+            "url": "classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#constant_PLUGIN_URI_PATTERN"
+        },                {
+            "fqsen": "\\JPKComAcfShortcodeEnableGitUpdate\\JPKComGitPluginUpdater\u003A\u003APACKAGE_PATTERN",
+            "name": "PACKAGE_PATTERN",
+            "summary": "Release\u0020assets\u0020are\u0020published\u0020as\u0020\u003Cslug\u003E.zip\u0020on\u0020the\u0020plugin\u0027s\u0020own\u0020repository.",
+            "url": "classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#constant_PACKAGE_PATTERN"
+        },                {
+            "fqsen": "\\JPKComAcfShortcodeEnableGitUpdate\\JPKComGitPluginUpdater\u003A\u003AASSET_PATTERN",
+            "name": "ASSET_PATTERN",
+            "summary": "File\u0020name\u0020of\u0020a\u0020JPKCom\u0020release\u0020asset,\u0020lower\u002Dcased,\u0020as\u0020the\u0020install\u0020gate\u0020claims\u0020it.",
+            "url": "classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#constant_ASSET_PATTERN"
+        },                {
+            "fqsen": "\\JPKComAcfShortcodeEnableGitUpdate\\JPKComGitPluginUpdater\u003A\u003ASLUG_PATTERN",
+            "name": "SLUG_PATTERN",
+            "summary": "Slug\u0020of\u0020a\u0020JPKCom\u0020plugin,\u0020as\u0020used\u0020for\u0020folder\u0020and\u0020main\u0020file.",
+            "url": "classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#constant_SLUG_PATTERN"
+        },                {
+            "fqsen": "\\JPKComAcfShortcodeEnableGitUpdate\\JPKComGitPluginUpdater\u003A\u003AMANIFEST_URL_FORMAT",
+            "name": "MANIFEST_URL_FORMAT",
+            "summary": "Manifest\u0020location\u0020for\u0020a\u0020plugin\u0020whose\u0020copy\u0020is\u0020not\u0020loaded.",
+            "url": "classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#constant_MANIFEST_URL_FORMAT"
+        },                {
+            "fqsen": "\\JPKComAcfShortcodeEnableGitUpdate\\JPKComGitPluginUpdater\u003A\u003AHOST_FAIL_KEY",
+            "name": "HOST_FAIL_KEY",
+            "summary": "Host\u002Dwide\u0020breaker\u003A\u0020one\u0020dead\u0020or\u0020slow\u0020github.io\u0020must\u0020not\u0020cost\u0020a\u0020timeout\u0020per\u0020plugin.",
+            "url": "classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#constant_HOST_FAIL_KEY"
+        },                {
+            "fqsen": "\\JPKComAcfShortcodeEnableGitUpdate\\JPKComGitPluginUpdater\u003A\u003AREAD_FETCH_BUDGET",
+            "name": "READ_FETCH_BUDGET",
+            "summary": "Uncached\u0020manifest\u0020fetches\u0020allowed\u0020per\u0020request\u0020while\u0020rendering\u0020update\u0020data.",
+            "url": "classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#constant_READ_FETCH_BUDGET"
+        },                {
+            "fqsen": "\\JPKComAcfShortcodeEnableGitUpdate\\JPKComGitPluginUpdater\u003A\u003ASLOW_FETCH_SECONDS",
+            "name": "SLOW_FETCH_SECONDS",
+            "summary": "A\u0020successful\u0020fetch\u0020slower\u0020than\u0020this\u0020\u0028seconds\u0029\u0020also\u0020trips\u0020the\u0020host\u0020breaker.",
+            "url": "classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#constant_SLOW_FETCH_SECONDS"
         },                {
             "fqsen": "\\JPKComAcfShortcodeEnableGitUpdate\\JPKComGitPluginUpdater\u003A\u003A\u0024plugin_slug",
             "name": "plugin_slug",
@@ -66,10 +231,30 @@ Search.appendIndex(
             "summary": "",
             "url": "classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#property_cache_key"
         },                {
-            "fqsen": "\\JPKComAcfShortcodeEnableGitUpdate\\JPKComGitPluginUpdater\u003A\u003A\u0024cache_enabled",
-            "name": "cache_enabled",
+            "fqsen": "\\JPKComAcfShortcodeEnableGitUpdate\\JPKComGitPluginUpdater\u003A\u003A\u0024members_signature",
+            "name": "members_signature",
             "summary": "",
-            "url": "classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#property_cache_enabled"
+            "url": "classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#property_members_signature"
+        },                {
+            "fqsen": "\\JPKComAcfShortcodeEnableGitUpdate\\JPKComGitPluginUpdater\u003A\u003A\u0024leader_for_size",
+            "name": "leader_for_size",
+            "summary": "",
+            "url": "classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#property_leader_for_size"
+        },                {
+            "fqsen": "\\JPKComAcfShortcodeEnableGitUpdate\\JPKComGitPluginUpdater\u003A\u003A\u0024leader_id",
+            "name": "leader_id",
+            "summary": "",
+            "url": "classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#property_leader_id"
+        },                {
+            "fqsen": "\\JPKComAcfShortcodeEnableGitUpdate\\JPKComGitPluginUpdater\u003A\u003A\u0024read_fetches",
+            "name": "read_fetches",
+            "summary": "",
+            "url": "classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#property_read_fetches"
+        },                {
+            "fqsen": "\\JPKComAcfShortcodeEnableGitUpdate\\JPKComGitPluginUpdater\u003A\u003A\u0024validated_urls",
+            "name": "validated_urls",
+            "summary": "",
+            "url": "classes/JPKComAcfShortcodeEnableGitUpdate-JPKComGitPluginUpdater.html#property_validated_urls"
         },                {
             "fqsen": "\\JPKCOM_ACF_SHORTCODE_ENABLE_VERSION",
             "name": "JPKCOM_ACF_SHORTCODE_ENABLE_VERSION",

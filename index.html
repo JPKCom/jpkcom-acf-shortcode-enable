@@ -35,7 +35,7 @@ Shortcode</h1>
 https://github.com/JPKCom/jpkcom-acf-shortcode-enable<br />
 <strong>Description:</strong> Shortcodes can be used within a WYSIWYG to
 display another field’s value.<br />
-<strong>Version:</strong> 2.0.11<br />
+<strong>Version:</strong> 2.0.12<br />
 <strong>Author:</strong> Jean Pierre Kolb <a href="mailto:jpk@jpkc.com"
 class="email">jpk@jpkc.com</a><br />
 <strong>Author URI:</strong> https://www.jpkc.com<br />
@@ -45,7 +45,7 @@ class="email">jpk@jpkc.com</a><br />
 <strong>Requires at least:</strong> 6.9<br />
 <strong>Tested up to:</strong> 7.1<br />
 <strong>Requires PHP:</strong> 8.3<br />
-<strong>Stable tag:</strong> 2.0.11<br />
+<strong>Stable tag:</strong> 2.0.12<br />
 <strong>License:</strong> GPL-2.0-or-later<br />
 <strong>License URI:</strong>
 https://www.gnu.org/licenses/gpl-2.0.html<br />
@@ -97,14 +97,37 @@ file. Click ‘Install Now’.</li>
 <li>Click ‘Activate’ to use the plugin right away.</li>
 </ol>
 <h2 id="changelog">Changelog</h2>
-<h3 id="section">2.0.11</h3>
+<h3 id="section">2.0.12</h3>
+<ul>
+<li>Added: updates for inactive JPKCom plugins. WordPress never runs the
+code of a deactivated plugin, so its own updater never ran and it was
+never offered an update. Every JPKCom plugin now ships updater 1.5.0;
+one copy answers for all installed JPKCom plugins, active or not, with
+the update row, the icon and “View details”. The SHA-256 check applies
+to an inactive plugin exactly as to an active one. On multisite, at
+least one JPKCom plugin must be network-active or active on the main
+site</li>
+<li>Security: the stored list of plugin updates no longer contains
+JPKCom download URLs; they are added back only while a JPKCom updater is
+loaded, so a request without one cannot install an unverified package.
+The checksum check now also verifies a package another plugin supplied
+instead of accepting it, and recognises every GitHub address of a
+release file</li>
+<li>Changed: plugins installed as a Git (or other version-control)
+checkout or in a renamed folder are told about a new release but never
+updated automatically, because an update would delete the checkout or
+the renamed folder. Update information is fetched only for users who can
+update plugins, in WordPress’s update cron and in WP-CLI, never for
+anonymous visitors</li>
+</ul>
+<h3 id="section-1">2.0.11</h3>
 <ul>
 <li>Added: a plugin icon. The update manifest now points WordPress to
 the JPKCom logo, so the Updates screen (Dashboard → Updates) shows it
 next to this plugin instead of the generic pattern wordpress.org
 generates from the slug</li>
 </ul>
-<h3 id="section-1">2.0.10</h3>
+<h3 id="section-2">2.0.10</h3>
 <ul>
 <li>Security: the plugin header now carries
 <code>Update URI: https://github.com/JPKCom/jpkcom-acf-shortcode-enable</code>.
@@ -124,7 +147,7 @@ executing whatever phpdoc.org serves that day. No effect on the shipped
 plugin</li>
 <li>CI: <code>shivammathur/setup-php</code> pinned to 2.40.0</li>
 </ul>
-<h3 id="section-2">2.0.9</h3>
+<h3 id="section-3">2.0.9</h3>
 <ul>
 <li>Fixed: on a block theme the <code>[acf]</code> shortcode produced
 nothing outside <code>the_content</code> — a template part, a widget or
@@ -166,7 +189,7 @@ bindings, only publicly viewable posts, and an escaped value unless
 against the installed plugin folder even though ACF Pro is not on
 wordpress.org — only the “install dependency” link is unavailable</li>
 </ul>
-<h3 id="section-3">2.0.8</h3>
+<h3 id="section-4">2.0.8</h3>
 <ul>
 <li>Fixed: the update manifest no longer reports
 <code>network: true</code> for this plugin. The generator defaulted a
@@ -182,7 +205,7 @@ repository are now English throughout, and the developer notes in
 <code>CLAUDE.md</code> were translated and trimmed. No effect on the
 shipped plugin</li>
 </ul>
-<h3 id="section-4">2.0.7</h3>
+<h3 id="section-5">2.0.7</h3>
 <ul>
 <li>Changed: <code>Tested up to</code> raised to WordPress 7.1</li>
 <li>Changed: the bundled updater’s runtime floor now matches the
@@ -194,7 +217,7 @@ and <code>tested</code> now say 6.9 and 7.1. They only apply when the
 README metadata cannot be read, but a stale fallback would have
 published a minimum the plugin no longer supports</li>
 </ul>
-<h3 id="section-5">2.0.6</h3>
+<h3 id="section-6">2.0.6</h3>
 <ul>
 <li>Added: plugin banners (<code>assets/banner-1544x500.avif</code>,
 <code>assets/banner-772x250.avif</code>) — a plain <code>#3c4955</code>
@@ -202,7 +225,7 @@ surface with no lettering. The update manifest already advertised these
 two URLs, but nothing was published under them, so the plugin card in
 wp-admin had a broken banner</li>
 </ul>
-<h3 id="section-6">2.0.5</h3>
+<h3 id="section-7">2.0.5</h3>
 <ul>
 <li>CI: the release step no longer copies the staging directory into
 itself, so the ZIP has no empty
@@ -216,7 +239,7 @@ to full commit SHAs</li>
 <li>CI: security and regression tests now run on every pull request,
 where a plugin has them</li>
 </ul>
-<h3 id="section-7">2.0.4</h3>
+<h3 id="section-8">2.0.4</h3>
 <ul>
 <li>Security: update packages are now verified <em>before</em>
 installation — the verified file is handed to WordPress instead of being
@@ -241,7 +264,7 @@ instead of being retried on every admin request</li>
 <li>Added: CI workflow on every pull request (PHP lint, named-argument
 check, YAML validation, action-pinning guard)</li>
 </ul>
-<h3 id="section-8">2.0.3</h3>
+<h3 id="section-9">2.0.3</h3>
 <ul>
 <li>Added secure self-hosted plugin updates via GitHub with SHA256
 checksum verification</li>
@@ -257,20 +280,20 @@ gh-pages on release</li>
 and guarded the ACF init callback
 (<code>jpkcom_acf_enable_shortcode</code>)</li>
 </ul>
-<h3 id="section-9">2.0.2</h3>
+<h3 id="section-10">2.0.2</h3>
 <ul>
 <li>Tested up to WP v6.8</li>
 </ul>
-<h3 id="section-10">2.0.1</h3>
+<h3 id="section-11">2.0.1</h3>
 <ul>
 <li>Fix Stable tag</li>
 </ul>
-<h3 id="section-11">2.0.0</h3>
+<h3 id="section-12">2.0.0</h3>
 <ul>
 <li>Added README.md</li>
 <li>Plugin meta data update</li>
 </ul>
-<h3 id="section-12">1.0.0</h3>
+<h3 id="section-13">1.0.0</h3>
 <ul>
 <li>Initial Release</li>
 </ul>
