@@ -1,4 +1,11 @@
-<h3 id="section">2.0.10</h3>
+<h3 id="section">2.0.11</h3>
+<ul>
+<li>Added: a plugin icon. The update manifest now points WordPress to
+the JPKCom logo, so the Updates screen (Dashboard → Updates) shows it
+next to this plugin instead of the generic pattern wordpress.org
+generates from the slug</li>
+</ul>
+<h3 id="section-1">2.0.10</h3>
 <ul>
 <li>Security: the plugin header now carries
 <code>Update URI: https://github.com/JPKCom/jpkcom-acf-shortcode-enable</code>.
@@ -18,7 +25,7 @@ executing whatever phpdoc.org serves that day. No effect on the shipped
 plugin</li>
 <li>CI: <code>shivammathur/setup-php</code> pinned to 2.40.0</li>
 </ul>
-<h3 id="section-1">2.0.9</h3>
+<h3 id="section-2">2.0.9</h3>
 <ul>
 <li>Fixed: on a block theme the <code>[acf]</code> shortcode produced
 nothing outside <code>the_content</code> — a template part, a widget or
@@ -60,7 +67,7 @@ bindings, only publicly viewable posts, and an escaped value unless
 against the installed plugin folder even though ACF Pro is not on
 wordpress.org — only the “install dependency” link is unavailable</li>
 </ul>
-<h3 id="section-2">2.0.8</h3>
+<h3 id="section-3">2.0.8</h3>
 <ul>
 <li>Fixed: the update manifest no longer reports
 <code>network: true</code> for this plugin. The generator defaulted a
@@ -76,7 +83,7 @@ repository are now English throughout, and the developer notes in
 <code>CLAUDE.md</code> were translated and trimmed. No effect on the
 shipped plugin</li>
 </ul>
-<h3 id="section-3">2.0.7</h3>
+<h3 id="section-4">2.0.7</h3>
 <ul>
 <li>Changed: <code>Tested up to</code> raised to WordPress 7.1</li>
 <li>Changed: the bundled updater’s runtime floor now matches the
@@ -88,7 +95,7 @@ and <code>tested</code> now say 6.9 and 7.1. They only apply when the
 README metadata cannot be read, but a stale fallback would have
 published a minimum the plugin no longer supports</li>
 </ul>
-<h3 id="section-4">2.0.6</h3>
+<h3 id="section-5">2.0.6</h3>
 <ul>
 <li>Added: plugin banners (<code>assets/banner-1544x500.avif</code>,
 <code>assets/banner-772x250.avif</code>) — a plain <code>#3c4955</code>
@@ -96,7 +103,7 @@ surface with no lettering. The update manifest already advertised these
 two URLs, but nothing was published under them, so the plugin card in
 wp-admin had a broken banner</li>
 </ul>
-<h3 id="section-5">2.0.5</h3>
+<h3 id="section-6">2.0.5</h3>
 <ul>
 <li>CI: the release step no longer copies the staging directory into
 itself, so the ZIP has no empty
@@ -110,7 +117,7 @@ to full commit SHAs</li>
 <li>CI: security and regression tests now run on every pull request,
 where a plugin has them</li>
 </ul>
-<h3 id="section-6">2.0.4</h3>
+<h3 id="section-7">2.0.4</h3>
 <ul>
 <li>Security: update packages are now verified <em>before</em>
 installation — the verified file is handed to WordPress instead of being
@@ -135,7 +142,7 @@ instead of being retried on every admin request</li>
 <li>Added: CI workflow on every pull request (PHP lint, named-argument
 check, YAML validation, action-pinning guard)</li>
 </ul>
-<h3 id="section-7">2.0.3</h3>
+<h3 id="section-8">2.0.3</h3>
 <ul>
 <li>Added secure self-hosted plugin updates via GitHub with SHA256
 checksum verification</li>
@@ -151,20 +158,20 @@ gh-pages on release</li>
 and guarded the ACF init callback
 (<code>jpkcom_acf_enable_shortcode</code>)</li>
 </ul>
-<h3 id="section-8">2.0.2</h3>
+<h3 id="section-9">2.0.2</h3>
 <ul>
 <li>Tested up to WP v6.8</li>
 </ul>
-<h3 id="section-9">2.0.1</h3>
+<h3 id="section-10">2.0.1</h3>
 <ul>
 <li>Fix Stable tag</li>
 </ul>
-<h3 id="section-10">2.0.0</h3>
+<h3 id="section-11">2.0.0</h3>
 <ul>
 <li>Added README.md</li>
 <li>Plugin meta data update</li>
 </ul>
-<h3 id="section-11">1.0.0</h3>
+<h3 id="section-12">1.0.0</h3>
 <ul>
 <li>Initial Release</li>
 </ul>
