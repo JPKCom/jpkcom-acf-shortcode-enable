@@ -3,7 +3,7 @@
 **Plugin Name:** JPKCom ACF (Pro) Enable Shortcode  
 **Plugin URI:** https://github.com/JPKCom/jpkcom-acf-shortcode-enable  
 **Description:** Shortcodes can be used within a WYSIWYG to display another field’s value.  
-**Version:** 2.0.11  
+**Version:** 2.0.12  
 **Author:** Jean Pierre Kolb <jpk@jpkc.com>  
 **Author URI:** https://www.jpkc.com  
 **Contributors:** JPKCom  
@@ -12,7 +12,7 @@
 **Requires at least:** 6.9  
 **Tested up to:** 7.1  
 **Requires PHP:** 8.3  
-**Stable tag:** 2.0.11  
+**Stable tag:** 2.0.12  
 **License:** GPL-2.0-or-later  
 **License URI:** https://www.gnu.org/licenses/gpl-2.0.html  
 **Update URI:** https://github.com/JPKCom/jpkcom-acf-shortcode-enable
@@ -54,6 +54,11 @@ Enabling the shortcode is necessary but not sufficient. ACF additionally require
 
 
 ## Changelog
+
+### 2.0.12
+* Added: updates for inactive JPKCom plugins. WordPress never runs the code of a deactivated plugin, so its own updater never ran and it was never offered an update. Every JPKCom plugin now ships updater 1.5.0; one copy answers for all installed JPKCom plugins, active or not, with the update row, the icon and "View details". The SHA-256 check applies to an inactive plugin exactly as to an active one. On multisite, at least one JPKCom plugin must be network-active or active on the main site
+* Security: the stored list of plugin updates no longer contains JPKCom download URLs; they are added back only while a JPKCom updater is loaded, so a request without one cannot install an unverified package. The checksum check now also verifies a package another plugin supplied instead of accepting it, and recognises every GitHub address of a release file
+* Changed: plugins installed as a Git (or other version-control) checkout or in a renamed folder are told about a new release but never updated automatically, because an update would delete the checkout or the renamed folder. Update information is fetched only for users who can update plugins, in WordPress's update cron and in WP-CLI, never for anonymous visitors
 
 ### 2.0.11
 * Added: a plugin icon. The update manifest now points WordPress to the JPKCom logo, so the Updates screen (Dashboard → Updates) shows it next to this plugin instead of the generic pattern wordpress.org generates from the slug
