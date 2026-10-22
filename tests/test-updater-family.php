@@ -176,9 +176,6 @@ function plugin_basename( string $file ): string {
 	return str_starts_with( $file, $dir ) ? substr( $file, strlen( $dir ) ) : ltrim( $file, '/' );
 }
 
-// jpkcom-hide-login's copy logs through its plugin's helper.
-function jpkcom_hide_login_log( string $message, string $level = 'trace' ): void {}
-
 function wp_get_active_and_valid_plugins(): array {
 	return $GLOBALS['__active'];
 }
